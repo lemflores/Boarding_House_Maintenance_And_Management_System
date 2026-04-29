@@ -105,7 +105,7 @@
     </div>
 
     {{-- Activity Log --}}
-    <div>
+    <div class="bg-white rounded-xl border border-[#ede7df] p-5">
         <h3 class="text-[15px] font-bold text-[#2d1a0e] mb-4">Activity Log</h3>
         <div class="space-y-4">
             @foreach ($activityLog as $log)
