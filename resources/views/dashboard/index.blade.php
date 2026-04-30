@@ -32,20 +32,26 @@
     {{-- Revenue --}}
     <div class="bg-white rounded-xl border border-[#ede7df] p-5">
         <div class="flex items-center gap-2 mb-3">
-            <div class="w-9 h-9 bg-green-100 rounded-lg flex items-center justify-center text-[18px]">💰</div>
+            <div class="w-9 h-9 bg-green-100 rounded-lg flex items-center justify-center text-[18px]"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
+</svg>
+</div>
             <span class="text-[10px] font-semibold uppercase tracking-[0.09em] text-gray-400">Total Revenue</span>
         </div>
         <p class="text-[22px] font-bold text-[#2d1a0e]">₱{{ number_format($totalRevenue, 2) }}</p>
         <a href="{{ route('finances') }}"
            class="inline-flex items-center gap-1 text-[11px] text-[#7c3a1e] hover:text-[#5c2910] font-medium mt-1.5 transition-colors">
-            Export Ledger ↓
+          
         </a>
     </div>
 
     {{-- Occupancy --}}
     <div class="bg-white rounded-xl border border-[#ede7df] p-5">
         <div class="flex items-center gap-2 mb-3">
-            <div class="w-9 h-9 bg-orange-100 rounded-lg flex items-center justify-center text-[18px]">🏢</div>
+            <div class="w-9 h-9 bg-orange-100 rounded-lg flex items-center justify-center text-[18px]"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
+</svg>
+</div>
             <span class="text-[10px] font-semibold uppercase tracking-[0.09em] text-gray-400">Occupancy</span>
         </div>
         <p class="text-[22px] font-bold text-[#2d1a0e]">
@@ -60,7 +66,10 @@
     {{-- Active Requests --}}
     <div class="bg-white rounded-xl border border-[#ede7df] p-5">
         <div class="flex items-center gap-2 mb-3">
-            <div class="w-9 h-9 bg-red-100 rounded-lg flex items-center justify-center text-[18px]">🔧</div>
+            <div class="w-9 h-9 bg-red-100 rounded-lg flex items-center justify-center text-[18px]"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5M6 7.5h3v3H6v-3Z" />
+</svg>
+</div>
             <span class="text-[10px] font-semibold uppercase tracking-[0.09em] text-gray-400">Active Requests</span>
         </div>
         <p class="text-[22px] font-bold text-[#2d1a0e]">{{ $pendingRequests }} Pending</p>
@@ -88,7 +97,10 @@
             @foreach ($maintenanceItems as $item)
             <div class="bg-white rounded-xl border border-[#ede7df] p-4 flex items-center gap-3.5">
                 <div class="w-10 h-10 {{ $item['iconBg'] }} rounded-xl flex items-center justify-center text-[18px] flex-shrink-0">
-                    {{ $item['icon'] }}
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+</svg>
+
                 </div>
                 <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-2 flex-wrap">

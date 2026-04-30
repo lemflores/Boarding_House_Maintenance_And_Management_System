@@ -33,8 +33,11 @@
             <button class="text-gray-500 text-[12px] font-medium px-4 py-1.5 rounded-lg hover:bg-[#faf7f4] transition-colors">Overdue</button>
         </div>
         <div class="relative">
-            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[13px]">🔍</span>
-            <input type="text" placeholder="Search tenant or unit..."
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[13px]"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+</svg>
+</span>
+            <input type="text" placeholder=" Search tenant or unit..."
                    class="pl-8 pr-4 py-2 border border-[#e5e7eb] rounded-lg text-[12px] outline-none focus:border-[#7c3a1e] transition-colors w-60 bg-white text-gray-600">
         </div>
     </div>

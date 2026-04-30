@@ -15,14 +15,18 @@
         {{-- Toolbar --}}
         <div class="flex items-center gap-3">
             <div class="flex items-center gap-2 bg-white border border-[#ede7df] rounded-lg px-3.5 py-2 text-[13px] text-[#2d1a0e] font-medium whitespace-nowrap">
-                📅 May 2026
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+</svg>
+ May 2026
             </div>
-            <button class="inline-flex items-center gap-2 border border-[#ede7df] bg-white text-gray-500 text-[12px] font-medium px-3.5 py-2 rounded-lg hover:border-[#7c3a1e] hover:text-[#7c3a1e] transition-colors whitespace-nowrap">
-                ↓ Export Report
-            </button>
+
             <div class="relative flex-1">
-                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[13px]">🔍</span>
-                <input type="text" placeholder="Search logs..."
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[13px]"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+</svg>
+</span>
+                <input type="text" placeholder="  Search logs..."
                        class="w-full pl-8 pr-4 py-2 border border-[#e5e7eb] rounded-lg text-[12px] outline-none focus:border-[#7c3a1e] transition-colors bg-white text-gray-600">
             </div>
         </div>
@@ -47,7 +51,11 @@
                         <td class="px-4 py-3.5 font-mono text-[11px] text-gray-400">{{ $ticket['ref'] }}</td>
                         <td class="px-4 py-3.5 text-[13px] font-semibold text-[#2d1a0e]">{{ $ticket['subject'] }}</td>
                         <td class="px-4 py-3.5">
-                            <span class="text-[11px] text-gray-400 mr-0.5">📍</span>
+                            <span class="text-[11px] text-gray-400 mr-0.5"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+</svg>
+</span>
                             <span class="text-[12px] text-gray-500">{{ $ticket['location'] }}</span>
                         </td>
                         <td class="px-4 py-3.5">
@@ -57,7 +65,10 @@
                                 </div>
                             @else
                                 <div class="flex items-center gap-1.5">
-                                    <div class="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 text-[10px]">👤</div>
+                                    <div class="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 text-[10px]"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+</svg>
+</div>
                                     <span class="text-[10px] text-gray-400 font-medium uppercase tracking-wide">Unassigned</span>
                                 </div>
                             @endif
@@ -74,11 +85,11 @@
                         <td class="px-4 py-3.5">
                             @if ($ticket['status'] === 'NEW')
                                 <span class="inline-flex items-center gap-1 bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase">
-                                    🔵 New
+                                    New
                                 </span>
                             @else
                                 <span class="inline-flex items-center gap-1 bg-orange-50 text-orange-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase whitespace-nowrap">
-                                    🔄 In Progress
+                                    In Progress
                                 </span>
                             @endif
                         </td>
@@ -99,7 +110,10 @@
         {{-- Priority Card --}}
         <div class="bg-white rounded-xl border border-[#ede7df] p-4">
             <div class="flex items-start gap-3">
-                <div class="w-11 h-11 bg-red-100 rounded-xl flex items-center justify-center text-[20px] flex-shrink-0">❄️</div>
+                <div class="w-11 h-11 bg-red-100 rounded-xl flex items-center justify-center text-[20px] flex-shrink-0"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+</svg>
+</div>
                 <div class="flex-1 min-w-0">
                     <div class="flex items-start gap-2 flex-wrap">
                         <span class="text-[13px] font-bold text-[#2d1a0e] leading-snug">Unit 103 – Air Conditioning Leak</span>

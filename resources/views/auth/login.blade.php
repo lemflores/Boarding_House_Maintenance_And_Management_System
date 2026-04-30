@@ -26,7 +26,7 @@
         {{-- Top logo --}}
         <div class="relative z-10 p-8">
             <div class="flex items-center gap-2 text-white">
-                <span class="text-lg">🏢</span>
+                <span class="text-lg"></span>
                 <span class="font-[Playfair_Display] font-bold text-[17px] tracking-wide">NaVi Boarding House</span>
             </div>
         </div>
@@ -72,7 +72,10 @@
                         Manager Email
                     </label>
                     <div class="flex items-center border border-gray-200 rounded-lg px-3 py-2.5 gap-2 focus-within:border-[#7c3a1e] transition-colors">
-                        <span class="text-gray-400 text-[13px] leading-none">@</span>
+                        <span class="text-gray-400 text-[13px] leading-none"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+  <path fill-rule="evenodd" d="M17.834 6.166a8.25 8.25 0 1 0 0 11.668.75.75 0 0 1 1.06 1.06c-3.807 3.808-9.98 3.808-13.788 0-3.808-3.807-3.808-9.98 0-13.788 3.807-3.808 9.98-3.808 13.788 0A9.722 9.722 0 0 1 21.75 12c0 .975-.296 1.887-.809 2.571-.514.685-1.28 1.179-2.191 1.179-.904 0-1.666-.487-2.18-1.164a5.25 5.25 0 1 1-.82-6.26V8.25a.75.75 0 0 1 1.5 0V12c0 .682.208 1.27.509 1.671.3.401.659.579.991.579.332 0 .69-.178.991-.579.3-.4.509-.99.509-1.671a8.222 8.222 0 0 0-2.416-5.834ZM15.75 12a3.75 3.75 0 1 0-7.5 0 3.75 3.75 0 0 0 7.5 0Z" clip-rule="evenodd" />
+</svg>
+</span>
                         <input id="email" type="email" name="email" value="{{ old('email') }}"
                                placeholder="e.g. ilustrado@bahay.com"
                                class="flex-1 text-[13px] text-gray-700 outline-none bg-transparent placeholder-gray-300"
@@ -86,12 +89,19 @@
                         Password
                     </label>
                     <div class="flex items-center border border-gray-200 rounded-lg px-3 py-2.5 gap-2 focus-within:border-[#7c3a1e] transition-colors">
-                        <span class="text-gray-400 text-[13px]">🔒</span>
+                        <span class="text-gray-400 text-[13px]"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+  <path fill-rule="evenodd" d="M12 1.5a5.25 5.25 0 0 0-5.25 5.25v3a3 3 0 0 0-3 3v6.75a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3v-6.75a3 3 0 0 0-3-3v-3c0-2.9-2.35-5.25-5.25-5.25Zm3.75 8.25v-3a3.75 3.75 0 1 0-7.5 0v3h7.5Z" clip-rule="evenodd" />
+</svg>
+</span>
                         <input id="password" type="password" name="password"
                                class="flex-1 text-[13px] text-gray-700 outline-none bg-transparent tracking-[0.2em]"
                                required>
                         <button type="button" onclick="document.getElementById('password').type==='password'?document.getElementById('password').type='text':document.getElementById('password').type='password'"
-                                class="text-gray-400 hover:text-gray-600 text-[13px]">👁</button>
+                                class="text-gray-400 hover:text-gray-600 text-[13px]"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+  <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+  <path fill-rule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 0 1 0-1.113ZM17.25 12a5.25 5.25 0 1 1-10.5 0 5.25 5.25 0 0 1 10.5 0Z" clip-rule="evenodd" />
+</svg>
+</button>
                     </div>
                 </div>
 
@@ -110,7 +120,7 @@
             </form>
 
             <div class="mt-6 text-center">
-                <p class="text-[12px] text-gray-400 mb-2">Are you a new Tenant?</p>
+                <p class="text-[12px] text-gray-400 mb-2">Are you a new Manager?</p>
                 <button class="border border-gray-200 text-gray-500 text-[12px] font-medium px-5 py-[7px] rounded-full hover:bg-gray-50 transition-colors">
                     Register
                 </button>

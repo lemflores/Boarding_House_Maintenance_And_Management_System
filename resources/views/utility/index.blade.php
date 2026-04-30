@@ -9,14 +9,7 @@
         <h1 class="font-[Playfair_Display] text-[32px] font-bold text-[#2d1a0e]">Room Status</h1>
         <p class="text-[12px] text-gray-400 mt-0.5">Floor and Available Room Status</p>
     </div>
-    <div class="flex gap-2 mt-2">
-        <button class="bg-[#7c3a1e] text-white text-[13px] font-semibold px-4 py-2 rounded-lg hover:bg-[#5c2910] transition-colors">
-            Grid View
-        </button>
-        <button class="border border-[#e5e7eb] bg-white text-gray-500 text-[13px] font-medium px-4 py-2 rounded-lg hover:border-[#7c3a1e] hover:text-[#7c3a1e] transition-colors">
-            Floor Plan
-        </button>
-    </div>
+ 
 </div>
 
 {{-- ── SUMMARY CARDS ────────────────────────────────────────────── --}}

@@ -10,7 +10,7 @@ class UtilityController extends Controller
     {
         $rooms = [
             ['number' => '101', 'status' => 'occupied', 'statusClass' => 'room-card-occupied', 'tenant' => 'Mateo Dela Cruz'],
-            ['number' => '102', 'status' => 'repair',   'statusClass' => 'room-card-repair',   'issue' => 'AC Unit Leakage',    'subNote' => 'PENDING WO 🔍'],
+            ['number' => '102', 'status' => 'repair',   'statusClass' => 'room-card-repair',   'issue' => 'AC Unit Leakage',    'subNote' => 'PENDING WO'],
             ['number' => '103', 'status' => 'vacant',   'statusClass' => 'room-card-vacant',   'note' => 'Immediate Move-in'],
             ['number' => '104', 'status' => 'occupied', 'statusClass' => 'room-card-occupied', 'tenant' => 'Rafael Santos'],
             ['number' => '105', 'status' => 'occupied', 'statusClass' => 'room-card-occupied', 'tenant' => 'Carlos Yulo'],
