@@ -20,7 +20,7 @@ class TenantController extends Controller
                 'status'        => 'Active',
                 'statusBadge'   => 'badge-green',
                 'payment'       => 'Paid',
-                'paymentIcon'   => '✅',
+                'paymentIcon'   => '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>',
                 'paymentColor'  => 'text-green-700',
             ],
             [
@@ -34,7 +34,7 @@ class TenantController extends Controller
                 'status'        => 'Renewal Sent',
                 'statusBadge'   => 'badge-orange',
                 'payment'       => 'Pending',
-                'paymentIcon'   => '🕐',
+                'paymentIcon'   => '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>',
                 'paymentColor'  => 'text-orange-500',
             ],
             [
@@ -48,7 +48,7 @@ class TenantController extends Controller
                 'status'        => 'Active',
                 'statusBadge'   => 'badge-green',
                 'payment'       => 'Paid',
-                'paymentIcon'   => '✅',
+                'paymentIcon'   => '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>',
                 'paymentColor'  => 'text-green-700',
             ],
             [
@@ -61,9 +61,9 @@ class TenantController extends Controller
                 'leaseUrgency'  => 'text-red-600',
                 'status'        => 'Active',
                 'statusBadge'   => 'badge-green',
-                'payment'       => 'Paid',
-                'paymentIcon'   => '✅',
-                'paymentColor'  => 'text-green-700',
+                'payment'       => 'Overdue',
+                'paymentIcon'   => '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>',
+                'paymentColor'  => 'text-red-600',
             ],
         ];
 

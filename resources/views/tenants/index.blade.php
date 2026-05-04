@@ -93,8 +93,8 @@ Add New Tenant
                     @endif
                 </td>
                 <td class="px-4 py-4">
-                    <span class="text-[13px] {{ $tenant['paymentColor'] }} font-medium">
-                        {{ $tenant['paymentIcon'] }} {{ $tenant['payment'] }}
+                    <span class="text-[13px] {{ $tenant['paymentColor'] }} font-medium inline-flex items-center gap-1">
+                        {!! $tenant['paymentIcon'] !!} {{ $tenant['payment'] }}
                     </span>
                 </td>
                 <td class="px-4 py-4">
