@@ -40,7 +40,8 @@
         <h3 class="text-[13px] font-bold text-[#2d1a0e] mb-3">Floor Filter</h3>
         <div class="space-y-2 mb-6">
             @foreach ($floors as $floor)
-            <button class="w-full flex items-center justify-between rounded-lg px-3.5 py-2.5 text-[13px] font-semibold transition-colors
+            <a href="{{ route('utility', ['floor' => $floor['value']]) }}"
+               class="w-full flex items-center justify-between rounded-lg px-3.5 py-2.5 text-[13px] font-semibold transition-colors block
                 {{ $floor['active']
                     ? 'bg-red-50 text-red-600 border border-red-200'
                     : 'bg-white border border-[#ede7df] text-gray-500 hover:border-[#7c3a1e]' }}">
@@ -48,7 +49,7 @@
                 <span class="{{ $floor['active'] ? 'text-red-400 text-base' : 'text-[11px] font-normal text-gray-400' }}">
                     {{ $floor['active'] ? '›' : $floor['count'].' Units' }}
                 </span>
-            </button>
+            </a>
             @endforeach
         </div>
 
