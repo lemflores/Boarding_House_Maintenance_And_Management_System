@@ -57,6 +57,12 @@
                 Please enter your credentials to manage your spaces.
             </p>
 
+            @if (session('registered'))
+                <div class="mb-5 bg-green-50 border border-green-200 text-green-700 text-[13px] rounded-xl px-4 py-3">
+                    {{ session('registered') }}
+                </div>
+            @endif
+
             @if ($errors->any())
                 <div class="mb-5 bg-red-50 border border-red-200 text-red-700 text-[13px] rounded-xl px-4 py-3">
                     {{ $errors->first() }}
@@ -121,7 +127,8 @@
 
             <div class="mt-6 text-center">
                 <p class="text-[12px] text-gray-400 mb-2">Are you a new Manager?</p>
-                <button class="border border-gray-200 text-gray-500 text-[12px] font-medium px-5 py-[7px] rounded-full hover:bg-gray-50 transition-colors">
+                <button type="button" onclick="toggleRegisterModal(true)"
+                        class="border border-gray-200 text-gray-500 text-[12px] font-medium px-5 py-[7px] rounded-full hover:bg-gray-50 transition-colors">
                     Register
                 </button>
             </div>
@@ -129,6 +136,73 @@
     </div>
 
 </div>
+
+<div id="registerModal" class="fixed inset-0 z-50 {{ old('from_register') ? 'flex' : 'hidden' }} items-center justify-center bg-black/50 p-4"
+     onclick="if (event.target === this) toggleRegisterModal(false)">
+    <div class="relative w-full max-w-lg bg-white rounded-[30px] shadow-2xl p-6 md:p-8">
+        <button type="button" onclick="toggleRegisterModal(false)"
+                class="absolute right-4 top-4 text-gray-400 hover:text-gray-600">
+            <span class="sr-only">Close register form</span>
+            ×
+        </button>
+
+        <h3 class="font-[Playfair_Display] text-[22px] font-bold text-[#2d1a0e] mb-2">Create an account</h3>
+        <p class="text-[13px] text-gray-500 mb-6">Register to access the boarding house management dashboard.</p>
+
+        @if ($errors->any() && old('from_register'))
+            <div class="mb-4 bg-red-50 border border-red-200 text-red-700 text-[13px] rounded-xl px-4 py-3">
+                {{ $errors->first() }}
+            </div>
+        @endif
+
+        <form method="POST" action="{{ route('register.post') }}" class="space-y-4">
+            @csrf
+            <input type="hidden" name="from_register" value="1">
+
+            <div>
+                <label for="name" class="block text-[12px] font-semibold text-[#2d1a0e] mb-1.5">Full Name</label>
+                <input id="name" name="name" type="text" value="{{ old('name') }}"
+                       class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-[13px] text-gray-700 outline-none focus:border-[#7c3a1e] transition-colors"
+                       placeholder="Jane Doe" required>
+            </div>
+
+            <div>
+                <label for="register_email" class="block text-[12px] font-semibold text-[#2d1a0e] mb-1.5">Email</label>
+                <input id="register_email" name="email" type="email" value="{{ old('email') }}"
+                       class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-[13px] text-gray-700 outline-none focus:border-[#7c3a1e] transition-colors"
+                       placeholder="e.g. ilustrado@bahay.com" required>
+            </div>
+
+            <div>
+                <label for="register_password" class="block text-[12px] font-semibold text-[#2d1a0e] mb-1.5">Password</label>
+                <input id="register_password" name="password" type="password"
+                       class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-[13px] text-gray-700 outline-none focus:border-[#7c3a1e] transition-colors"
+                       placeholder="Minimum 8 characters" required>
+            </div>
+
+            <div>
+                <label for="password_confirmation" class="block text-[12px] font-semibold text-[#2d1a0e] mb-1.5">Confirm Password</label>
+                <input id="password_confirmation" name="password_confirmation" type="password"
+                       class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-[13px] text-gray-700 outline-none focus:border-[#7c3a1e] transition-colors"
+                       placeholder="Re-enter password" required>
+            </div>
+
+            <button type="submit"
+                    class="w-full bg-[#7c3a1e] hover:bg-[#5c2910] text-white font-semibold text-[14px] rounded-lg py-3 transition-colors shadow-md">
+                Register account
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function toggleRegisterModal(open) {
+        const modal = document.getElementById('registerModal');
+        if (!modal) return;
+        modal.classList.toggle('hidden', !open);
+        modal.classList.toggle('flex', open);
+    }
+</script>
 
 </body>
 </html>
