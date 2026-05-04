@@ -4,17 +4,17 @@
 @section('content')
 
 {{-- ── HEADER ──────────────────────────────────────────────────── --}}
-<h1 class="font-[Playfair_Display] text-[32px] font-bold text-[#2d1a0e] mb-6">Maintenance Board</h1>
+<h1 class="font-[Playfair_Display] text-[26px] md:text-[32px] font-bold text-[#2d1a0e] mb-6">Maintenance Board</h1>
 
 {{-- ── CONTENT GRID ─────────────────────────────────────────────── --}}
-<div class="grid grid-cols-3 gap-6">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
     {{-- LEFT: Toolbar + Table --}}
-    <div class="col-span-2 space-y-4">
+    <div class="col-span-1 lg:col-span-2 space-y-4">
 
         {{-- Toolbar --}}
-        <div class="flex items-center gap-3">
-            <div class="flex items-center gap-2 bg-white border border-[#ede7df] rounded-lg px-3.5 py-2 text-[13px] text-[#2d1a0e] font-medium whitespace-nowrap">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
+            <div class="flex items-center gap-2 bg-white border border-[#ede7df] rounded-lg px-3.5 py-2 text-[12px] sm:text-[13px] text-[#2d1a0e] font-medium whitespace-nowrap w-full sm:w-auto">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
   <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
 </svg>
@@ -32,17 +32,17 @@
         </div>
 
         {{-- Table --}}
-        <div class="bg-white rounded-xl border border-[#ede7df] overflow-hidden">
-            <table class="w-full">
+        <div class="bg-white rounded-xl border border-[#ede7df] overflow-x-auto">
+            <table class="w-full min-w-max">
                 <thead class="bg-[#faf7f4]">
                     <tr>
-                        <th class="text-left text-[10px] font-semibold uppercase tracking-[0.1em] text-gray-400 px-4 py-3">Reference ID</th>
-                        <th class="text-left text-[10px] font-semibold uppercase tracking-[0.1em] text-gray-400 px-4 py-3">Subject / Issue</th>
-                        <th class="text-left text-[10px] font-semibold uppercase tracking-[0.1em] text-gray-400 px-4 py-3">Location / Unit</th>
-                        <th class="text-left text-[10px] font-semibold uppercase tracking-[0.1em] text-gray-400 px-4 py-3">Assigned To</th>
-                        <th class="text-left text-[10px] font-semibold uppercase tracking-[0.1em] text-gray-400 px-4 py-3">Priority</th>
-                        <th class="text-left text-[10px] font-semibold uppercase tracking-[0.1em] text-gray-400 px-4 py-3">Status</th>
-                        <th class="text-left text-[10px] font-semibold uppercase tracking-[0.1em] text-gray-400 px-4 py-3">Reported</th>
+                        <th class="text-left text-[9px] md:text-[10px] font-semibold uppercase tracking-[0.1em] text-gray-400 px-2 md:px-4 py-3">Reference ID</th>
+                        <th class="text-left text-[9px] md:text-[10px] font-semibold uppercase tracking-[0.1em] text-gray-400 px-2 md:px-4 py-3">Subject / Issue</th>
+                        <th class="text-left text-[9px] md:text-[10px] font-semibold uppercase tracking-[0.1em] text-gray-400 px-2 md:px-4 py-3 hidden md:table-cell">Location / Unit</th>
+                        <th class="text-left text-[9px] md:text-[10px] font-semibold uppercase tracking-[0.1em] text-gray-400 px-2 md:px-4 py-3 hidden lg:table-cell">Assigned To</th>
+                        <th class="text-left text-[9px] md:text-[10px] font-semibold uppercase tracking-[0.1em] text-gray-400 px-2 md:px-4 py-3 hidden md:table-cell">Priority</th>
+                        <th class="text-left text-[9px] md:text-[10px] font-semibold uppercase tracking-[0.1em] text-gray-400 px-2 md:px-4 py-3">Status</th>
+                        <th class="text-left text-[9px] md:text-[10px] font-semibold uppercase tracking-[0.1em] text-gray-400 px-2 md:px-4 py-3 hidden md:table-cell">Reported</th>
                     </tr>
                 </thead>
                 <tbody>

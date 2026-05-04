@@ -9,10 +9,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-[#f5f0eb] font-sans antialiased">
+<body class="bg-[#f5f0eb] font-sans antialiased overflow-x-hidden">
 
     {{-- ── SIDEBAR ─────────────────────────────────────────────── --}}
-    <aside class="fixed inset-y-0 left-0 w-48 bg-white border-r border-[#ede7df] flex flex-col z-50">
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-48 bg-white border-r border-[#ede7df] flex flex-col z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
 
         {{-- Brand --}}
         <div class="px-5 pt-5 pb-4 border-b border-[#ede7df]">
@@ -68,8 +68,15 @@
     </aside>
 
     {{-- ── TOPBAR ──────────────────────────────────────────────── --}}
-    <header class="fixed top-0 left-48 right-0 h-14 bg-white border-b border-[#ede7df] flex items-center justify-between px-8 z-40">
-        <span class="font-[Playfair_Display] font-bold text-xl text-[#2d1a0e]">NaVi</span>
+    <header class="fixed top-0 left-0 right-0 h-14 bg-white border-b border-[#ede7df] flex items-center justify-between px-4 md:px-8 md:left-48 z-40">
+        <div class="flex items-center gap-3">
+            <button id="sidebarToggle" class="md:hidden p-2 hover:bg-[#f5f0eb] rounded-lg transition-colors" aria-label="Toggle menu">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-700">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+            </button>
+            <span class="font-[Playfair_Display] font-bold text-lg md:text-xl text-[#2d1a0e]">NaVi</span>
+        </div>
         <div class="flex items-center gap-3">
             <button class="w-8 h-8 rounded-full bg-[#f5f0eb] flex items-center justify-center text-gray-500 hover:bg-[#ede7df] transition-colors text-sm"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
   <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0M3.124 7.5A8.969 8.969 0 0 1 5.292 3m13.416 0a8.969 8.969 0 0 1 2.168 4.5" />
@@ -86,10 +93,43 @@
         </div>
     </header>
 
+    {{-- Mobile Sidebar Overlay --}}
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 md:hidden z-40 hidden" onclick="closeSidebar()"></div>
+
     {{-- ── MAIN ────────────────────────────────────────────────── --}}
-    <main class="ml-48 mt-14 p-8 min-h-[calc(100vh-56px)]">
+    <main class="ml-0 md:ml-48 mt-14 p-4 md:p-8 min-h-[calc(100vh-56px)]">
         @yield('content')
     </main>
+
+    {{-- Mobile Navigation Script --}}
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const toggleBtn = document.getElementById('sidebarToggle');
+
+        function openSidebar() {
+            sidebar?.classList.remove('-translate-x-full');
+            overlay?.classList.remove('hidden');
+        }
+
+        function closeSidebar() {
+            sidebar?.classList.add('-translate-x-full');
+            overlay?.classList.add('hidden');
+        }
+
+        toggleBtn?.addEventListener('click', () => {
+            if (!sidebar) return;
+            sidebar.classList.contains('-translate-x-full') ? openSidebar() : closeSidebar();
+        });
+
+        // Close sidebar when a link is clicked
+        document.querySelectorAll('#sidebar a').forEach(link => {
+            link.addEventListener('click', closeSidebar);
+        });
+
+        // Close sidebar when clicking on the main area
+        document.querySelector('main')?.addEventListener('click', closeSidebar);
+    </script>
 
 </body>
 </html>

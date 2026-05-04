@@ -4,39 +4,39 @@
 @section('content')
 
 {{-- ── HEADER ──────────────────────────────────────────────────── --}}
-<div class="flex items-start justify-between mb-1">
+<div class="flex flex-col sm:flex-row items-start sm:items-start justify-between gap-4 mb-1">
     <div>
-        <h1 class="font-[Playfair_Display] text-[32px] font-bold text-[#2d1a0e]">Room Status</h1>
-        <p class="text-[12px] text-gray-400 mt-0.5">Floor and Available Room Status</p>
+        <h1 class="font-[Playfair_Display] text-[26px] md:text-[32px] font-bold text-[#2d1a0e]">Room Status</h1>
+        <p class="text-[11px] md:text-[12px] text-gray-400 mt-0.5">Floor and Available Room Status</p>
     </div>
  
 </div>
 
 {{-- ── SUMMARY CARDS ────────────────────────────────────────────── --}}
-<div class="grid grid-cols-4 gap-4 mt-5 mb-6">
-    <div class="bg-white rounded-xl border border-[#ede7df] p-5">
-        <p class="text-[10px] font-semibold uppercase tracking-[0.1em] text-gray-400 mb-2">Total Units</p>
-        <p class="text-[34px] font-bold text-[#2d1a0e] leading-none">{{ $totalUnits }}</p>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-4 mt-5 mb-6">
+    <div class="bg-white rounded-xl border border-[#ede7df] p-4 md:p-5">
+        <p class="text-[9px] md:text-[10px] font-semibold uppercase tracking-[0.1em] text-gray-400 mb-2">Total Units</p>
+        <p class="text-[28px] md:text-[34px] font-bold text-[#2d1a0e] leading-none">{{ $totalUnits }}</p>
     </div>
-    <div class="bg-[#7c3a1e] rounded-xl p-5 text-white">
-        <p class="text-[10px] font-semibold uppercase tracking-[0.1em] text-white/60 mb-2">Occupied</p>
-        <p class="text-[34px] font-bold leading-none">{{ $occupied }}</p>
+    <div class="bg-[#7c3a1e] rounded-xl p-4 md:p-5 text-white">
+        <p class="text-[9px] md:text-[10px] font-semibold uppercase tracking-[0.1em] text-white/60 mb-2">Occupied</p>
+        <p class="text-[28px] md:text-[34px] font-bold leading-none">{{ $occupied }}</p>
     </div>
-    <div class="bg-white rounded-xl border border-[#ede7df] p-5">
-        <p class="text-[10px] font-semibold uppercase tracking-[0.1em] text-gray-400 mb-2">Vacant</p>
-        <p class="text-[34px] font-bold text-[#2d1a0e] leading-none">{{ sprintf('%02d', $vacant) }}</p>
+    <div class="bg-white rounded-xl border border-[#ede7df] p-4 md:p-5">
+        <p class="text-[9px] md:text-[10px] font-semibold uppercase tracking-[0.1em] text-gray-400 mb-2">Vacant</p>
+        <p class="text-[28px] md:text-[34px] font-bold text-[#2d1a0e] leading-none">{{ sprintf('%02d', $vacant) }}</p>
     </div>
-    <div class="bg-red-50 rounded-xl p-5">
-        <p class="text-[10px] font-semibold uppercase tracking-[0.1em] text-red-600 mb-2">Maintenance</p>
-        <p class="text-[34px] font-bold text-red-600 leading-none">{{ sprintf('%02d', $maintenance) }}</p>
+    <div class="bg-red-50 rounded-xl p-4 md:p-5">
+        <p class="text-[9px] md:text-[10px] font-semibold uppercase tracking-[0.1em] text-red-600 mb-2">Maintenance</p>
+        <p class="text-[28px] md:text-[34px] font-bold text-red-600 leading-none">{{ sprintf('%02d', $maintenance) }}</p>
     </div>
 </div>
 
 {{-- ── FLOOR FILTER + ROOM GRID ─────────────────────────────────── --}}
-<div class="grid grid-cols-4 gap-6">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6">
 
     {{-- Floor Filter --}}
-    <div>
+    <div class="hidden md:block">
         <h3 class="text-[13px] font-bold text-[#2d1a0e] mb-3">Floor Filter</h3>
         <div class="space-y-2 mb-6">
             @foreach ($floors as $floor)
@@ -67,8 +67,8 @@
     </div>
 
     {{-- Room Grid --}}
-    <div class="col-span-3">
-        <div class="grid grid-cols-4 gap-3">
+    <div class="col-span-1 md:col-span-3">
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-3">
             @foreach ($rooms as $room)
             <div class="bg-white rounded-xl border border-[#ede7df] p-3.5 hover:shadow-md transition-shadow
                 {{ $room['status'] === 'occupied' ? 'border-t-[3px] border-t-[#7c3a1e]' : ($room['status'] === 'repair' ? 'border-t-[3px] border-t-red-500' : 'border-t-[3px] border-t-gray-300') }}">

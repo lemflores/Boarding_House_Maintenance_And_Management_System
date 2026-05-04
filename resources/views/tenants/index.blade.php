@@ -4,9 +4,9 @@
 @section('content')
 
 {{-- ── HEADER ──────────────────────────────────────────────────── --}}
-<div class="flex items-center justify-between mb-7">
-    <h1 class="font-[Playfair_Display] text-[32px] font-bold text-[#2d1a0e]">Tenant Directory</h1>
-    <button class="inline-flex items-center gap-2 bg-[#7c3a1e] hover:bg-[#5c2910] text-white text-[13px] font-semibold px-4 py-2.5 rounded-lg transition-colors shadow">
+<div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-7">
+    <h1 class="font-[Playfair_Display] text-[26px] md:text-[32px] font-bold text-[#2d1a0e]">Tenant Directory</h1>
+    <button class="inline-flex items-center gap-2 bg-[#7c3a1e] hover:bg-[#5c2910] text-white text-[12px] md:text-[13px] font-semibold px-4 py-2.5 rounded-lg transition-colors shadow w-full md:w-auto justify-center md:justify-start">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
   <path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
 </svg>
@@ -15,7 +15,7 @@ Add New Tenant
 </div>
 
 {{-- ── STAT CARDS ───────────────────────────────────────────────── --}}
-<div class="grid grid-cols-3 gap-4 mb-7">
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 mb-7">
     <div class="bg-white rounded-xl border border-[#ede7df] p-5">
         <p class="text-[10px] font-semibold uppercase tracking-[0.1em] text-gray-400 mb-2">Total Residents</p>
         <p class="text-[34px] font-bold text-[#2d1a0e] leading-none">{{ $totalResidents }}</p>
@@ -38,24 +38,25 @@ Add New Tenant
 <div class="bg-white rounded-xl border border-[#ede7df] overflow-hidden">
 
     {{-- Search bar --}}
-    <div class="flex items-center justify-between px-6 py-4 border-b border-[#ede7df]">
-        <p class="text-[12px] text-gray-400">Displaying 1–{{ count($tenants) }} of {{ $totalResidents }} tenants</p>
-        <form method="GET" action="{{ route('tenants') }}">
-            <div class="relative">
+    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 px-4 md:px-6 py-4 border-b border-[#ede7df]">
+        <p class="text-[11px] md:text-[12px] text-gray-400">Displaying 1–{{ count($tenants) }} of {{ $totalResidents }} tenants</p>
+        <form method="GET" action="{{ route('tenants') }}" class="w-full md:w-auto">
+            <div class="relative w-full max-w-[320px]">
                 <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[13px]"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
   <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
 </svg>
 </span>
                 <input type="text" name="search" value="{{ request('search') }}"
                        placeholder=" Search tenants..."
-                       class="pl-8 pr-4 py-2 border border-[#e5e7eb] rounded-lg text-[12px] text-gray-600 outline-none focus:border-[#7c3a1e] transition-colors w-52 bg-white">
+                       class="pl-8 pr-4 py-2 border border-[#e5e7eb] rounded-lg text-[12px] text-gray-600 outline-none focus:border-[#7c3a1e] transition-colors w-full bg-white">
             </div>
         </form>
     </div>
 
     {{-- Table --}}
-    <table class="w-full">
-        <thead class="bg-[#faf7f4]">
+    <div class="overflow-x-auto">
+        <table class="w-full min-w-[720px]">
+            <thead class="bg-[#faf7f4]">
             <tr>
                 <th class="text-left text-[10px] font-semibold uppercase tracking-[0.1em] text-gray-400 px-6 py-3">Tenant</th>
                 <th class="text-left text-[10px] font-semibold uppercase tracking-[0.1em] text-gray-400 px-4 py-3">Unit</th>
@@ -102,7 +103,8 @@ Add New Tenant
             </tr>
             @endforeach
         </tbody>
-    </table>
+        </table>
+    </div>
 
     {{-- Pagination --}}
     <div class="flex items-center justify-between px-6 py-4 border-t border-[#ede7df]">

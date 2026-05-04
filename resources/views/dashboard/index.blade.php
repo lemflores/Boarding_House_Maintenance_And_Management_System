@@ -4,30 +4,30 @@
 @section('content')
 
 {{-- ── HERO BANNER ─────────────────────────────────────────────── --}}
-<div class="relative rounded-2xl overflow-hidden mb-6 min-h-[130px] flex items-end"
+<div class="relative rounded-2xl overflow-hidden mb-6 min-h-[100px] md:min-h-[130px] flex items-end"
      style="background: linear-gradient(100deg,rgba(50,22,8,.90) 0%,rgba(100,45,20,.80) 55%,rgba(130,70,35,.70) 100%)">
     <img src="https://images.unsplash.com/photo-1560185007-cde436f6a4d0?w=1000&auto=format&fit=crop&q=80"
          alt="" class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-60">
-    <div class="relative z-10 w-full flex items-center justify-between px-8 py-7">
+    <div class="relative z-10 w-full flex flex-col md:flex-row items-start md:items-center justify-between px-4 md:px-8 py-5 md:py-7 gap-4">
         <div class="text-white">
-            <h2 class="font-[Playfair_Display] text-[28px] font-bold leading-tight">Magandang Umaga.</h2>
-            <p class="text-[12px] text-white/65 mt-0.5">NaVi Dormitory Management</p>
+            <h2 class="font-[Playfair_Display] text-[22px] md:text-[28px] font-bold leading-tight">Magandang Umaga.</h2>
+            <p class="text-[11px] md:text-[12px] text-white/65 mt-0.5">NaVi Dormitory Management</p>
         </div>
-        <div class="flex gap-8 text-white text-right">
+        <div class="flex gap-4 md:gap-8 text-white text-right">
             <div>
-                <p class="text-[9px] uppercase tracking-[0.12em] text-white/55 font-semibold">Occupancy</p>
-                <p class="text-[22px] font-bold mt-0.5">{{ $occupancyRate }}%</p>
+                <p class="text-[8px] md:text-[9px] uppercase tracking-[0.12em] text-white/55 font-semibold">Occupancy</p>
+                <p class="text-[18px] md:text-[22px] font-bold mt-0.5">{{ $occupancyRate }}%</p>
             </div>
             <div>
-                <p class="text-[9px] uppercase tracking-[0.12em] text-white/55 font-semibold">Active Rent</p>
-                <p class="text-[22px] font-bold mt-0.5">{{ $totalUnits }}</p>
+                <p class="text-[8px] md:text-[9px] uppercase tracking-[0.12em] text-white/55 font-semibold">Active Rent</p>
+                <p class="text-[18px] md:text-[22px] font-bold mt-0.5">{{ $totalUnits }}</p>
             </div>
         </div>
     </div>
 </div>
 
 {{-- ── STAT CARDS ───────────────────────────────────────────────── --}}
-<div class="grid grid-cols-4 gap-4 mb-6">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6">
 
     {{-- Revenue --}}
     <div class="bg-white rounded-xl border border-[#ede7df] p-5">
@@ -88,10 +88,10 @@
 </div>
 
 {{-- ── BOTTOM ROW ───────────────────────────────────────────────── --}}
-<div class="grid grid-cols-3 gap-6">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
     {{-- Priority Maintenance --}}
-    <div class="col-span-2">
+    <div class="col-span-1 lg:col-span-2">
         <h3 class="text-[15px] font-bold text-[#2d1a0e] mb-4">Priority Maintenance</h3>
         <div class="space-y-3">
             @foreach ($maintenanceItems as $item)
