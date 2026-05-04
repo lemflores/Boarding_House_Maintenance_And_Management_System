@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 class FinanceController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $transactions = [
             [
@@ -56,12 +56,23 @@ class FinanceController extends Controller
             ],
         ];
 
+        $filter = $request->get('filter', 'all');
+
+        $filteredTransactions = $transactions;
+        if ($filter === 'pending') {
+            $filteredTransactions = array_filter($transactions, fn($txn) => $txn['status'] === 'PENDING');
+        } elseif ($filter === 'overdue') {
+            $filteredTransactions = array_filter($transactions, fn($txn) => $txn['status'] === 'OVERDUE');
+        }
+
         return view('finances.index', [
             'totalCollections' => 482900.00,
             'settledUnits'     => 36,
             'totalUnits'       => 48,
             'overdueAmount'    => 34500.00,
-            'transactions'     => $transactions,
+            'transactions'     => array_values($filteredTransactions), // Reindex array
+            'currentFilter'    => $filter,
+            'totalTransactions' => count($filteredTransactions),
         ]);
     }
 }

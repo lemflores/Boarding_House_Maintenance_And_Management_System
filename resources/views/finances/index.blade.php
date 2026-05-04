@@ -28,9 +28,9 @@
     {{-- Tabs + Search --}}
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-4 md:px-6 py-4 border-b border-[#ede7df]">
         <div class="flex gap-1 w-full sm:w-auto flex-wrap">
-            <button class="bg-[#2d1a0e] text-white text-[11px] md:text-[12px] font-semibold px-3 md:px-4 py-1.5 rounded-lg">All Transactions</button>
-            <button class="text-gray-500 text-[11px] md:text-[12px] font-medium px-3 md:px-4 py-1.5 rounded-lg hover:bg-[#faf7f4] transition-colors">Pending</button>
-            <button class="text-gray-500 text-[11px] md:text-[12px] font-medium px-3 md:px-4 py-1.5 rounded-lg hover:bg-[#faf7f4] transition-colors">Overdue</button>
+            <a href="{{ route('finances', ['filter' => 'all']) }}" class="{{ $currentFilter === 'all' ? 'bg-[#2d1a0e] text-white' : 'text-gray-500 hover:bg-[#faf7f4]' }} text-[11px] md:text-[12px] font-semibold px-3 md:px-4 py-1.5 rounded-lg transition-colors">All Transactions</a>
+            <a href="{{ route('finances', ['filter' => 'pending']) }}" class="{{ $currentFilter === 'pending' ? 'bg-[#2d1a0e] text-white' : 'text-gray-500 hover:bg-[#faf7f4]' }} text-[11px] md:text-[12px] font-medium px-3 md:px-4 py-1.5 rounded-lg transition-colors">Pending</a>
+            <a href="{{ route('finances', ['filter' => 'overdue']) }}" class="{{ $currentFilter === 'overdue' ? 'bg-[#2d1a0e] text-white' : 'text-gray-500 hover:bg-[#faf7f4]' }} text-[11px] md:text-[12px] font-medium px-3 md:px-4 py-1.5 rounded-lg transition-colors">Overdue</a>
         </div>
         <div class="relative w-full sm:w-auto">
             <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[13px]"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -96,7 +96,7 @@
 
     {{-- Pagination --}}
     <div class="flex items-center justify-between px-6 py-4 border-t border-[#ede7df]">
-        <p class="text-[12px] text-gray-400">Showing 1–{{ count($transactions) }} of 26 transactions</p>
+        <p class="text-[12px] text-gray-400">Showing {{ count($transactions) }} transactions</p>
         <div class="flex items-center gap-1.5">
             <button class="w-7 h-7 rounded-lg border border-[#e5e7eb] text-gray-400 text-[13px] hover:border-[#7c3a1e] transition-colors flex items-center justify-center">‹</button>
             <button class="w-7 h-7 rounded-lg bg-[#7c3a1e] text-white text-[12px] font-bold">1</button>
