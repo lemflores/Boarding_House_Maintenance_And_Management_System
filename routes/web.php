@@ -28,5 +28,6 @@ Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/dashboard',    [DashboardController::class, 'index'])->name('dashboard');
 Route::get('/utility',      [UtilityController::class,   'index'])->name('utility');
 Route::get('/tenants',      [TenantController::class,    'index'])->name('tenants');
+Route::get('/tenants/{id}', [TenantController::class,    'show'])->name('tenants.show');
 Route::get('/finances',     [FinanceController::class,   'index'])->name('finances');
 Route::get('/maintenance',  [MaintenanceController::class,'index'])->name('maintenance');

@@ -37,10 +37,14 @@ Add New Tenant
 {{-- ── TABLE CARD ───────────────────────────────────────────────── --}}
 <div class="bg-white rounded-xl border border-[#ede7df] overflow-hidden">
 
-    {{-- Search bar --}}
-    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 px-4 md:px-6 py-4 border-b border-[#ede7df]">
-        <p class="text-[11px] md:text-[12px] text-gray-400">Displaying 1–{{ count($tenants) }} of {{ $totalResidents }} tenants</p>
-        <form method="GET" action="{{ route('tenants') }}" class="w-full md:w-auto">
+    {{-- Tabs + Search --}}
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-4 md:px-6 py-4 border-b border-[#ede7df]">
+        <div class="flex gap-1 w-full sm:w-auto flex-wrap">
+            <a href="{{ route('tenants', ['filter' => 'all']) }}" class="{{ $currentFilter === 'all' ? 'bg-[#2d1a0e] text-white' : 'text-gray-500 hover:bg-[#faf7f4]' }} text-[11px] md:text-[12px] font-semibold px-3 md:px-4 py-1.5 rounded-lg transition-colors">All Tenants</a>
+            <a href="{{ route('tenants', ['filter' => 'active']) }}" class="{{ $currentFilter === 'active' ? 'bg-[#2d1a0e] text-white' : 'text-gray-500 hover:bg-[#faf7f4]' }} text-[11px] md:text-[12px] font-medium px-3 md:px-4 py-1.5 rounded-lg transition-colors">Active</a>
+            <a href="{{ route('tenants', ['filter' => 'renewal sent']) }}" class="{{ $currentFilter === 'renewal sent' ? 'bg-[#2d1a0e] text-white' : 'text-gray-500 hover:bg-[#faf7f4]' }} text-[11px] md:text-[12px] font-medium px-3 md:px-4 py-1.5 rounded-lg transition-colors">Renewal Sent</a>
+        </div>
+        <form method="GET" action="{{ route('tenants') }}" class="w-full sm:w-auto">
             <div class="relative w-full max-w-[320px]">
                 <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[13px]"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
   <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
@@ -49,6 +53,7 @@ Add New Tenant
                 <input type="text" name="search" value="{{ request('search') }}"
                        placeholder=" Search tenants..."
                        class="pl-8 pr-4 py-2 border border-[#e5e7eb] rounded-lg text-[12px] text-gray-600 outline-none focus:border-[#7c3a1e] transition-colors w-full bg-white">
+                <input type="hidden" name="filter" value="{{ $currentFilter }}">
             </div>
         </form>
     </div>
@@ -75,7 +80,7 @@ Add New Tenant
                              style="background-color:{{ $tenant['color'] }}">
                             {{ $tenant['initials'] }}
                         </div>
-                        <span class="text-[13px] font-semibold text-[#2d1a0e]">{{ $tenant['name'] }}</span>
+                        <a href="{{ route('tenants.show', $tenant['id']) }}" class="text-[13px] font-semibold text-[#2d1a0e] hover:text-[#7c3a1e] transition-colors">{{ $tenant['name'] }}</a>
                     </div>
                 </td>
                 <td class="px-4 py-4 text-[13px] text-gray-500">{{ $tenant['unit'] }}</td>
@@ -98,7 +103,16 @@ Add New Tenant
                     </span>
                 </td>
                 <td class="px-4 py-4">
-                    <button class="text-gray-300 hover:text-gray-500 text-xl leading-none px-1 transition-colors">⋮</button>
+                    <div class="relative">
+                        <button class="text-gray-300 hover:text-gray-500 text-xl leading-none px-1 transition-colors" onclick="toggleDropdown({{ $tenant['id'] }})">⋮</button>
+                        <div id="dropdown-{{ $tenant['id'] }}" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 hidden">
+                            <div class="py-1">
+                                <a href="{{ route('tenants.show', $tenant['id']) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">View Details</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Edit Tenant</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Delete Tenant</a>
+                            </div>
+                        </div>
+                    </div>
                 </td>
             </tr>
             @endforeach
@@ -125,3 +139,19 @@ Add New Tenant
 </div>
 
 @endsection
+
+<script>
+function toggleDropdown(id) {
+    const dropdown = document.getElementById('dropdown-' + id);
+    dropdown.classList.toggle('hidden');
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('.relative')) {
+        document.querySelectorAll('[id^="dropdown-"]').forEach(dropdown => {
+            dropdown.classList.add('hidden');
+        });
+    }
+});
+</script>
