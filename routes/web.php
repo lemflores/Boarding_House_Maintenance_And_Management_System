@@ -31,3 +31,6 @@ Route::get('/tenants',      [TenantController::class,    'index'])->name('tenant
 Route::get('/tenants/{id}', [TenantController::class,    'show'])->name('tenants.show');
 Route::get('/finances',     [FinanceController::class,   'index'])->name('finances');
 Route::get('/maintenance',  [MaintenanceController::class,'index'])->name('maintenance');
+Route::post('/maintenance', [MaintenanceController::class,'store'])->name('maintenance.store');
+Route::post('/maintenance/{id}/resolve', [MaintenanceController::class,'resolve'])->name('maintenance.resolve');
+Route::post('/maintenance/{id}/update-status', [MaintenanceController::class,'updateStatus'])->name('maintenance.updateStatus');
