@@ -67,10 +67,10 @@
                         <th class="text-left text-[9px] md:text-[10px] font-semibold uppercase tracking-[0.1em] text-gray-400 px-2 md:px-4 py-3">Action</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="maintenanceTableBody">
                     @foreach ($tickets as $ticket)
                     @if($ticket['status'] !== 'RESOLVED')
-                    <tr class="border-t border-[#f0ebe5] hover:bg-[#faf7f4] transition-colors ticket-row" data-subject="{{ $ticket['subject'] }}" data-location="{{ $ticket['location'] }}">
+                    <tr id="ticket-row-{{ $ticket['id'] }}" class="border-t border-[#f0ebe5] hover:bg-[#faf7f4] transition-colors ticket-row" data-ticket-id="{{ $ticket['id'] }}" data-subject="{{ $ticket['subject'] }}" data-location="{{ $ticket['location'] }}" data-status="{{ $ticket['status'] }}">
                         <td class="px-4 py-3.5 font-mono text-[11px] text-gray-400">{{ $ticket['ref'] }}</td>
                         <td class="px-4 py-3.5 text-[13px] font-semibold text-[#2d1a0e]">{{ $ticket['subject'] }}</td>
                         <td class="px-4 py-3.5 hidden md:table-cell">
@@ -202,19 +202,19 @@
             <div class="space-y-3">
                 <div class="flex items-center justify-between">
                     <span class="text-[13px] text-gray-500">Open Tickets</span>
-                    <span class="text-[13px] font-bold text-[#2d1a0e]">{{ $openTickets }}</span>
+                    <span id="openTicketsCount" class="text-[13px] font-bold text-[#2d1a0e]">{{ $openTickets }}</span>
                 </div>
                 <div class="flex items-center justify-between">
                     <span class="text-[13px] text-gray-500">In Progress</span>
-                    <span class="text-[13px] font-bold text-orange-600">{{ $inProgressTickets }}</span>
+                    <span id="inProgressCount" class="text-[13px] font-bold text-orange-600">{{ $inProgressTickets }}</span>
                 </div>
                 <div class="flex items-center justify-between">
                     <span class="text-[13px] text-gray-500">Resolved This Month</span>
-                    <span class="text-[13px] font-bold text-green-600">{{ $resolvedTickets }}</span>
+                    <span id="resolvedCount" class="text-[13px] font-bold text-green-600">{{ $resolvedTickets }}</span>
                 </div>
                 <div class="flex items-center justify-between">
                     <span class="text-[13px] text-gray-500">Unassigned</span>
-                    <span class="text-[13px] font-bold text-red-600">{{ $unassignedTickets }}</span>
+                    <span id="unassignedCount" class="text-[13px] font-bold text-red-600">{{ $unassignedTickets }}</span>
                 </div>
             </div>
         </div>
@@ -320,6 +320,11 @@ function handleAddReport(e) {
         description: formData.get('description'),
     };
 
+    if (!data.subject || !data.location || !data.priority) {
+        alert('Please complete all required fields.');
+        return;
+    }
+
     fetch("{{ route('maintenance.store') }}", {
         method: 'POST',
         headers: {
@@ -329,14 +334,14 @@ function handleAddReport(e) {
         body: JSON.stringify(data)
     })
     .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert('Maintenance report created successfully!');
+    .then(result => {
+        if (result.success) {
+            addTicketRow(result.ticket);
+            updateSummaryCounts({ open: 1, unassigned: 1 });
+            alert('Maintenance report added to the table.');
             closeAddReportModal();
-            // Reload page to see new ticket
-            setTimeout(() => location.reload(), 500);
         } else {
-            alert('Error: ' + data.message);
+            alert('Error: ' + result.message);
         }
     })
     .catch(error => {
@@ -345,31 +350,114 @@ function handleAddReport(e) {
     });
 }
 
+function addTicketRow(ticket) {
+    const tbody = document.getElementById('maintenanceTableBody');
+    const row = document.createElement('tr');
+    row.id = `ticket-row-${ticket.id}`;
+    row.className = 'border-t border-[#f0ebe5] hover:bg-[#faf7f4] transition-colors ticket-row';
+    row.dataset.ticketId = ticket.id;
+    row.dataset.subject = ticket.subject;
+    row.dataset.location = ticket.location;
+    row.dataset.status = ticket.status;
+
+    const statusLabel = ticket.status === 'NEW'
+        ? '<span class="inline-flex items-center gap-1 bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase">New</span>'
+        : '<span class="inline-flex items-center gap-1 bg-orange-50 text-orange-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase whitespace-nowrap">In Progress</span>';
+
+    const priorityLabel = ticket.priority === 'URGENT'
+        ? '<span class="inline-block bg-red-100 text-red-700 text-[10px] font-bold px-2 py-0.5 rounded uppercase">Urgent</span>'
+        : ticket.priority === 'NORMAL'
+            ? '<span class="inline-block bg-orange-100 text-orange-700 text-[10px] font-bold px-2 py-0.5 rounded uppercase">Normal</span>'
+            : '<span class="inline-block bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded uppercase">Medium</span>';
+
+    const reportedLabel = ticket.reported || 'just now';
+
+    row.innerHTML = `
+        <td class="px-4 py-3.5 font-mono text-[11px] text-gray-400">${ticket.ref}</td>
+        <td class="px-4 py-3.5 text-[13px] font-semibold text-[#2d1a0e]">${ticket.subject}</td>
+        <td class="px-4 py-3.5 hidden md:table-cell">
+            <span class="text-[11px] text-gray-400 mr-0.5"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+            </svg></span>
+            <span class="text-[12px] text-gray-500">${ticket.location}</span>
+        </td>
+        <td class="px-4 py-3.5 hidden lg:table-cell">
+            <div class="flex items-center gap-1.5">
+                <div class="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 text-[10px]"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                </svg></div>
+                <span class="text-[10px] text-gray-400 font-medium uppercase tracking-wide">Unassigned</span>
+            </div>
+        </td>
+        <td class="px-4 py-3.5 hidden md:table-cell">${priorityLabel}</td>
+        <td class="px-4 py-3.5">${statusLabel}</td>
+        <td class="px-4 py-3.5 text-[11px] text-gray-400 whitespace-nowrap hidden md:table-cell">${reportedLabel}</td>
+        <td class="px-4 py-3.5">
+            <button onclick="resolveIssue(${ticket.id})" class="bg-green-100 hover:bg-green-200 text-green-700 text-[10px] font-bold px-2.5 py-1.5 rounded transition-colors flex items-center gap-1 whitespace-nowrap">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Resolve
+            </button>
+        </td>
+    `;
+
+    tbody.prepend(row);
+}
+
+function updateSummaryCounts(changes) {
+    const getNode = id => document.getElementById(id);
+
+    if (changes.open) {
+        getNode('openTicketsCount').textContent = Number(getNode('openTicketsCount').textContent) + changes.open;
+    }
+    if (changes.inProgress) {
+        getNode('inProgressCount').textContent = Number(getNode('inProgressCount').textContent) + changes.inProgress;
+    }
+    if (changes.resolved) {
+        getNode('resolvedCount').textContent = Number(getNode('resolvedCount').textContent) + changes.resolved;
+    }
+    if (changes.unassigned) {
+        getNode('unassignedCount').textContent = Number(getNode('unassignedCount').textContent) + changes.unassigned;
+    }
+}
+
 // Resolve issue function
 function resolveIssue(ticketId) {
-    if (confirm('Are you sure you want to mark this issue as resolved?')) {
-        fetch(`{{ route('maintenance.resolve', '') }}/${ticketId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Issue resolved successfully!');
-                // Reload page to update table
-                setTimeout(() => location.reload(), 500);
-            } else {
-                alert('Error: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while resolving the issue.');
-        });
+    if (!confirm('Delete this issue from the table?')) {
+        return;
     }
+
+    const row = document.getElementById(`ticket-row-${ticketId}`);
+    if (row) {
+        const status = row.dataset.status;
+        row.remove();
+
+        if (status === 'NEW') {
+            updateSummaryCounts({ open: -1, unassigned: -1 });
+        } else if (status === 'IN PROGRESS') {
+            updateSummaryCounts({ inProgress: -1, unassigned: -1 });
+        }
+    }
+
+    fetch(`/maintenance/${ticketId}/resolve`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.success) {
+            alert('Issue deleted from the table, but backend update failed: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Issue deleted from the table, but backend update failed.');
+    });
 }
 </script>
 
