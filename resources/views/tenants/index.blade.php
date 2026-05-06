@@ -6,15 +6,18 @@
 {{-- ── HEADER ──────────────────────────────────────────────────── --}}
 <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-7">
     <h1 class="font-[Playfair_Display] text-[26px] md:text-[32px] font-bold text-[#2d1a0e]">Tenant Directory</h1>
-    <button class="inline-flex items-center gap-2 bg-[#7c3a1e] hover:bg-[#5c2910] text-white text-[12px] md:text-[13px] font-semibold px-4 py-2.5 rounded-lg transition-colors shadow w-full md:w-auto justify-center md:justify-start">
+    <a href="{{ route('tenants.create') }}" class="inline-flex items-center gap-2 bg-[#7c3a1e] hover:bg-[#5c2910] text-white text-[12px] md:text-[13px] font-semibold px-4 py-2.5 rounded-lg transition-colors shadow w-full md:w-auto justify-center md:justify-start">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
   <path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
 </svg>
 Add New Tenant
-    </button>
+    </a>
 </div>
-
-{{-- ── STAT CARDS ───────────────────────────────────────────────── --}}
+@if (session('success'))
+    <div class="mb-5 rounded-xl border border-green-200 bg-green-50 p-4 text-green-700">
+        {{ session('success') }}
+    </div>
+@endif
 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 mb-7">
     <div class="bg-white rounded-xl border border-[#ede7df] p-5">
         <p class="text-[10px] font-semibold uppercase tracking-[0.1em] text-gray-400 mb-2">Total Residents</p>
@@ -72,7 +75,7 @@ Add New Tenant
             </tr>
         </thead>
         <tbody>
-            @foreach ($tenants as $tenant)
+            @forelse ($tenants as $tenant)
             <tr class="border-t border-[#f0ebe5] hover:bg-[#faf7f4] transition-colors">
                 <td class="px-6 py-4">
                     <div class="flex items-center gap-3">
@@ -108,14 +111,22 @@ Add New Tenant
                         <div id="dropdown-{{ $tenant['id'] }}" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 hidden">
                             <div class="py-1">
                                 <a href="{{ route('tenants.show', $tenant['id']) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">View Details</a>
-                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Edit Tenant</a>
-                                <a href="#" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Delete Tenant</a>
+                                <a href="{{ route('tenants.edit', $tenant['id']) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Edit Tenant</a>
+                                <form method="POST" action="{{ route('tenants.destroy', $tenant['id']) }}" onsubmit="return confirm('Delete this tenant?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Delete Tenant</button>
+                                </form>
                             </div>
                         </div>
                     </div>
                 </td>
             </tr>
-            @endforeach
+            @empty
+                <tr class="border-t border-[#f0ebe5]">
+                    <td colspan="6" class="px-6 py-8 text-center text-gray-500 text-sm">No tenants matched your current filter or search.</td>
+                </tr>
+            @endforelse
         </tbody>
         </table>
     </div>

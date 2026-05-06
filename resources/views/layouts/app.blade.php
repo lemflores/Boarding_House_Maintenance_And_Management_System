@@ -77,19 +77,37 @@
             </button>
             <span class="font-[Playfair_Display] font-bold text-lg md:text-xl text-[#2d1a0e]">NaVi</span>
         </div>
-        <div class="flex items-center gap-3">
-            <button class="w-8 h-8 rounded-full bg-[#f5f0eb] flex items-center justify-center text-gray-500 hover:bg-[#ede7df] transition-colors text-sm"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+        <div class="relative flex items-center gap-3">
+            <button id="topbarNotificationButton" type="button" onclick="toggleTopbarDropdown('notifications')" class="w-8 h-8 rounded-full bg-[#f5f0eb] flex items-center justify-center text-gray-500 hover:bg-[#ede7df] transition-colors text-sm" aria-haspopup="true" aria-expanded="false" aria-controls="topbarNotificationDropdown">
+                <span class="sr-only">Open notifications</span>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
   <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0M3.124 7.5A8.969 8.969 0 0 1 5.292 3m13.416 0a8.969 8.969 0 0 1 2.168 4.5" />
 </svg>
-</button>
-            <button class="w-8 h-8 rounded-full bg-[#f5f0eb] flex items-center justify-center text-gray-500 hover:bg-[#ede7df] transition-colors text-sm"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
-</svg>
-</button>
-            <div class="w-8 h-8 rounded-full bg-[#4a3728] flex items-center justify-center text-white text-[10px] font-bold"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+            </button>
+
+            <div id="topbarNotificationDropdown" class="absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-lg z-50 hidden text-sm">
+                <div class="p-4 space-y-2">
+                    <p class="text-sm font-semibold text-[#2d1a0e]">Notifications</p>
+                    <p class="text-xs text-gray-500">You have no new notifications.</p>
+                    <a href="{{ route('dashboard') }}" class="block text-sm text-[#7c3a1e] hover:underline">View all notifications</a>
+                </div>
+            </div>
+
+            <div class="relative">
+                <button id="topbarProfileButton" type="button" onclick="toggleTopbarDropdown('profile')" class="w-8 h-8 rounded-full bg-[#4a3728] flex items-center justify-center text-white text-[10px] font-bold" aria-haspopup="true" aria-expanded="false" aria-controls="topbarProfileDropdown">
+                    <span class="sr-only">Open profile menu</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
   <path fill-rule="evenodd" d="M18.685 19.097A9.723 9.723 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 0 0 3.065 7.097A9.716 9.716 0 0 0 12 21.75a9.716 9.716 0 0 0 6.685-2.653Zm-12.54-1.285A7.486 7.486 0 0 1 12 15a7.486 7.486 0 0 1 5.855 2.812A8.224 8.224 0 0 1 12 20.25a8.224 8.224 0 0 1-5.855-2.438ZM15.75 9a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" clip-rule="evenodd" />
 </svg>
-</div>
+                </button>
+
+                <div id="topbarProfileDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg z-50 hidden text-sm">
+                    <a href="{{ route('dashboard') }}" class="block px-4 py-3 text-gray-700 hover:bg-[#f5f0eb]">Profile</a>
+                    <a href="{{ route('utility') }}" class="block px-4 py-3 text-gray-700 hover:bg-[#f5f0eb]">Settings</a>
+                    <div class="border-t border-[#ede7df]"></div>
+                    <a href="{{ route('logout') }}" class="block px-4 py-3 text-gray-700 hover:bg-[#f5f0eb]">Logout</a>
+                </div>
+            </div>
         </div>
     </header>
 
@@ -129,6 +147,38 @@
 
         // Close sidebar when clicking on the main area
         document.querySelector('main')?.addEventListener('click', closeSidebar);
+
+        function toggleTopbarDropdown(dropdownId) {
+            const notificationDropdown = document.getElementById('topbarNotificationDropdown');
+            const profileDropdown = document.getElementById('topbarProfileDropdown');
+
+            if (dropdownId === 'notifications') {
+                notificationDropdown?.classList.toggle('hidden');
+                profileDropdown?.classList.add('hidden');
+            }
+
+            if (dropdownId === 'profile') {
+                profileDropdown?.classList.toggle('hidden');
+                notificationDropdown?.classList.add('hidden');
+            }
+        }
+
+        document.addEventListener('click', event => {
+            const notificationButton = document.getElementById('topbarNotificationButton');
+            const profileButton = document.getElementById('topbarProfileButton');
+            const notificationDropdown = document.getElementById('topbarNotificationDropdown');
+            const profileDropdown = document.getElementById('topbarProfileDropdown');
+
+            const clickedInsideNotification = notificationButton?.contains(event.target) || notificationDropdown?.contains(event.target);
+            const clickedInsideProfile = profileButton?.contains(event.target) || profileDropdown?.contains(event.target);
+
+            if (!clickedInsideNotification) {
+                notificationDropdown?.classList.add('hidden');
+            }
+            if (!clickedInsideProfile) {
+                profileDropdown?.classList.add('hidden');
+            }
+        });
     </script>
 
 </body>

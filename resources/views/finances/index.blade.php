@@ -6,6 +6,25 @@
 {{-- ── HEADER ──────────────────────────────────────────────────── --}}
 <h1 class="font-[Playfair_Display] text-[26px] md:text-[32px] font-bold text-[#2d1a0e] mb-6">Payment Ledger</h1>
 
+{{-- ── FLASH MESSAGES ──────────────────────────────────────────── --}}
+@if(session('success'))
+    <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg mb-6 flex items-center gap-3">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+        </svg>
+        <span class="text-sm font-medium">{{ session('success') }}</span>
+    </div>
+@endif
+
+@if(session('error'))
+    <div class="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg mb-6 flex items-center gap-3">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126c-.866 1.5-.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126Z" />
+        </svg>
+        <span class="text-sm font-medium">{{ session('error') }}</span>
+    </div>
+@endif
+
 {{-- ── TOP STAT CARDS ───────────────────────────────────────────── --}}
 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 mb-7">
     <div class="bg-[#7c3a1e] rounded-xl p-5 text-white">
@@ -28,17 +47,27 @@
     {{-- Tabs + Search --}}
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-4 md:px-6 py-4 border-b border-[#ede7df]">
         <div class="flex gap-1 w-full sm:w-auto flex-wrap">
-            <a href="{{ route('finances', ['filter' => 'all']) }}" class="{{ $currentFilter === 'all' ? 'bg-[#2d1a0e] text-white' : 'text-gray-500 hover:bg-[#faf7f4]' }} text-[11px] md:text-[12px] font-semibold px-3 md:px-4 py-1.5 rounded-lg transition-colors">All Transactions</a>
-            <a href="{{ route('finances', ['filter' => 'pending']) }}" class="{{ $currentFilter === 'pending' ? 'bg-[#2d1a0e] text-white' : 'text-gray-500 hover:bg-[#faf7f4]' }} text-[11px] md:text-[12px] font-medium px-3 md:px-4 py-1.5 rounded-lg transition-colors">Pending</a>
-            <a href="{{ route('finances', ['filter' => 'overdue']) }}" class="{{ $currentFilter === 'overdue' ? 'bg-[#2d1a0e] text-white' : 'text-gray-500 hover:bg-[#faf7f4]' }} text-[11px] md:text-[12px] font-medium px-3 md:px-4 py-1.5 rounded-lg transition-colors">Overdue</a>
+            <a href="{{ route('finances', array_merge(['filter' => 'all'], $request->only('search'))) }}" class="{{ $currentFilter === 'all' ? 'bg-[#2d1a0e] text-white' : 'text-gray-500 hover:bg-[#faf7f4]' }} text-[11px] md:text-[12px] font-semibold px-3 md:px-4 py-1.5 rounded-lg transition-colors">All Transactions</a>
+            <a href="{{ route('finances', array_merge(['filter' => 'pending'], $request->only('search'))) }}" class="{{ $currentFilter === 'pending' ? 'bg-[#2d1a0e] text-white' : 'text-gray-500 hover:bg-[#faf7f4]' }} text-[11px] md:text-[12px] font-medium px-3 md:px-4 py-1.5 rounded-lg transition-colors">Pending</a>
+            <a href="{{ route('finances', array_merge(['filter' => 'overdue'], $request->only('search'))) }}" class="{{ $currentFilter === 'overdue' ? 'bg-[#2d1a0e] text-white' : 'text-gray-500 hover:bg-[#faf7f4]' }} text-[11px] md:text-[12px] font-medium px-3 md:px-4 py-1.5 rounded-lg transition-colors">Overdue</a>
         </div>
-        <div class="relative w-full sm:w-auto">
-            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[13px]"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+        <div class="flex gap-3">
+            <a href="{{ route('finances.create') }}" class="bg-[#7c3a1e] hover:bg-[#5a2a15] text-white text-[12px] font-semibold px-4 py-2 rounded-lg transition-colors">
+                Add Payment
+            </a>
+            <form method="GET" action="{{ route('finances') }}" class="flex">
+                @if($currentFilter !== 'all')
+                    <input type="hidden" name="filter" value="{{ $currentFilter }}">
+                @endif
+                <div class="relative">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[13px]"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
   <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
 </svg>
 </span>
-            <input type="text" placeholder=" Search tenant or unit..."
-                   class="pl-8 pr-4 py-2 border border-[#e5e7eb] rounded-lg text-[12px] outline-none focus:border-[#7c3a1e] transition-colors w-full md:w-60 bg-white text-gray-600">
+                    <input type="text" name="search" value="{{ $request->get('search') }}" placeholder=" Search tenant or unit..."
+                           class="pl-8 pr-4 py-2 border border-[#e5e7eb] rounded-lg text-[12px] outline-none focus:border-[#7c3a1e] transition-colors w-full md:w-60 bg-white text-gray-600">
+                </div>
+            </form>
         </div>
     </div>
 
@@ -80,13 +109,38 @@
                     @endif
                 </td>
                 <td class="px-4 py-4">
-                    @if ($txn['status'] === 'OVERDUE')
-                        <button class="bg-red-600 hover:bg-red-700 text-white text-[11px] font-bold px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap">
-                            Notify Tenant
-                        </button>
-                    @else
-                        <button class="text-gray-300 hover:text-gray-500 text-xl px-1 transition-colors">⋮</button>
-                    @endif
+                    <div class="relative">
+                        <button class="text-gray-300 hover:text-gray-500 text-xl leading-none px-1 transition-colors" onclick="toggleDropdown({{ $txn['id'] }})">⋮</button>
+                        <div id="dropdown-{{ $txn['id'] }}" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 hidden">
+                            <div class="py-1">
+                                @if ($txn['status'] === 'OVERDUE')
+                                    <form method="POST" action="{{ route('finances.notify', $txn['id']) }}">
+                                        @csrf
+                                        <button type="submit" class="w-full text-left px-4 py-2 text-sm text-orange-600 hover:bg-gray-100">Notify Tenant</button>
+                                    </form>
+                                    <form method="POST" action="{{ route('finances.mark-paid', $txn['id']) }}">
+                                        @csrf
+                                        <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mark as Paid</button>
+                                    </form>
+                                @elseif ($txn['status'] === 'PENDING')
+                                    <form method="POST" action="{{ route('finances.mark-paid', $txn['id']) }}">
+                                        @csrf
+                                        <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mark as Paid</button>
+                                    </form>
+                                @else
+                                    <form method="POST" action="{{ route('finances.mark-overdue', $txn['id']) }}">
+                                        @csrf
+                                        <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mark as Overdue</button>
+                                    </form>
+                                @endif
+                                <form method="POST" action="{{ route('finances.destroy', $txn['id']) }}" onsubmit="return confirm('Are you sure you want to delete this payment record?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Delete Payment</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 </td>
             </tr>
             @endforeach
@@ -109,3 +163,19 @@
 </div>
 
 @endsection
+
+<script>
+function toggleDropdown(id) {
+    const dropdown = document.getElementById('dropdown-' + id);
+    dropdown.classList.toggle('hidden');
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('.relative')) {
+        document.querySelectorAll('[id^="dropdown-"]').forEach(dropdown => {
+            dropdown.classList.add('hidden');
+        });
+    }
+});
+</script>

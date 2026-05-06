@@ -2,171 +2,191 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Tenant;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class TenantController extends Controller
 {
     public function index(Request $request)
     {
-        $allTenants = [
-            [
-                'id'            => 1,
-                'name'          => 'Rafael Dela Cruz',
-                'initials'      => 'RD',
-                'color'         => '#7c3a1e',
-                'unit'          => 'Unit 12',
-                'leasePeriod'   => 'Oct 2023 – Oct 2024',
-                'leaseRemaining'=> '10 Months Remaining',
-                'leaseUrgency'  => 'text-gray-400',
-                'status'        => 'Active',
-                'statusBadge'   => 'green',
-                'payment'       => 'Paid',
-                'paymentIcon'   => '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>',
-                'paymentColor'  => 'text-green-700',
-            ],
-            [
-                'id'            => 2,
-                'name'          => 'Bianca Santos',
-                'initials'      => 'BS',
-                'color'         => '#1565c0',
-                'unit'          => 'Unit 15',
-                'leasePeriod'   => 'Jan 2023 – Jan 2024',
-                'leaseRemaining'=> 'Expiring in 12 Days',
-                'leaseUrgency'  => 'text-orange-500',
-                'status'        => 'Renewal Sent',
-                'statusBadge'   => 'orange',
-                'payment'       => 'Pending',
-                'paymentIcon'   => '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>',
-                'paymentColor'  => 'text-orange-500',
-            ],
-            [
-                'id'            => 3,
-                'name'          => 'Miguel Reyes',
-                'initials'      => 'MR',
-                'color'         => '#555555',
-                'unit'          => 'Unit 08',
-                'leasePeriod'   => 'Mar 2023 – Mar 2024',
-                'leaseRemaining'=> '4 Months Remaining',
-                'leaseUrgency'  => 'text-gray-400',
-                'status'        => 'Active',
-                'statusBadge'   => 'green',
-                'payment'       => 'Paid',
-                'paymentIcon'   => '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>',
-                'paymentColor'  => 'text-green-700',
-            ],
-            [
-                'id'            => 4,
-                'name'          => 'Sofia Villamor',
-                'initials'      => 'SV',
-                'color'         => '#7b1fa2',
-                'unit'          => 'Unit 05',
-                'leasePeriod'   => 'Nov 2022 – Nov 2023',
-                'leaseRemaining'=> '1 Month Remaining',
-                'leaseUrgency'  => 'text-red-600',
-                'status'        => 'Active',
-                'statusBadge'   => 'green',
-                'payment'       => 'Overdue',
-                'paymentIcon'   => '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>',
-                'paymentColor'  => 'text-red-600',
-            ],
-        ];
-
-        // Filter by status
         $filter = $request->input('filter', 'all');
+        $search = $request->input('search', '');
+
+        $query = Tenant::query();
+
         if ($filter !== 'all') {
-            $allTenants = array_filter($allTenants, fn($t) => strtolower($t['status']) === strtolower($filter));
+            $query->whereRaw('LOWER(status) = ?', [Str::lower($filter)]);
         }
 
-        // Simple search filter
-        $search = $request->input('search', '');
         if ($search) {
-            $allTenants = array_filter($allTenants, fn($t) =>
-                str_contains(strtolower($t['name']), strtolower($search)) ||
-                str_contains(strtolower($t['unit']), strtolower($search))
-            );
+            $query->where(function ($query) use ($search) {
+                $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('unit', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            });
         }
+
+        $tenantModels = $query->orderBy('lease_end', 'asc')->get();
+
+        $tenants = $tenantModels->map(fn (Tenant $tenant) => $this->formatTenant($tenant))->all();
+
+        $totalResidents = Tenant::sum('occupants');
+        $activeLeases = Tenant::where('status', 'Active')->count();
+        $expiringLeases = Tenant::whereBetween('lease_end', [now(), now()->addDays(30)])->count();
+        $occupancyRate = Tenant::count() ? round($activeLeases / Tenant::count() * 100, 1) : 0;
 
         return view('tenants.index', [
-            'tenants'        => array_values($allTenants),
-            'totalResidents' => 124,
-            'activeLeases'   => 36,
-            'expiringLeases' => 6,
-            'occupancyRate'  => 75.1,
+            'tenants'        => $tenants,
+            'totalResidents' => $totalResidents,
+            'activeLeases'   => $activeLeases,
+            'expiringLeases' => $expiringLeases,
+            'occupancyRate'  => $occupancyRate,
             'currentFilter'  => $filter,
         ]);
     }
 
+    public function create()
+    {
+        return view('tenants.create');
+    }
+
+    public function store(Request $request)
+    {
+        $tenant = Tenant::create($this->validateTenant($request));
+
+        return redirect()->route('tenants.show', $tenant)->with('success', 'Tenant created successfully.');
+    }
+
     public function show($id)
     {
-        $allTenants = [
-            [
-                'id'            => 1,
-                'name'          => 'Rafael Dela Cruz',
-                'initials'      => 'RD',
-                'color'         => '#7c3a1e',
-                'unit'          => 'Unit 12',
-                'leasePeriod'   => 'Oct 2023 – Oct 2024',
-                'leaseRemaining'=> '10 Months Remaining',
-                'leaseUrgency'  => 'text-gray-400',
-                'status'        => 'Active',
-                'statusBadge'   => 'green',
-                'payment'       => 'Paid',
-                'paymentIcon'   => '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>',
-                'paymentColor'  => 'text-green-700',
-            ],
-            [
-                'id'            => 2,
-                'name'          => 'Bianca Santos',
-                'initials'      => 'BS',
-                'color'         => '#1565c0',
-                'unit'          => 'Unit 15',
-                'leasePeriod'   => 'Jan 2023 – Jan 2024',
-                'leaseRemaining'=> 'Expiring in 12 Days',
-                'leaseUrgency'  => 'text-orange-500',
-                'status'        => 'Renewal Sent',
-                'statusBadge'   => 'orange',
-                'payment'       => 'Pending',
-                'paymentIcon'   => '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>',
-                'paymentColor'  => 'text-orange-500',
-            ],
-            [
-                'id'            => 3,
-                'name'          => 'Miguel Reyes',
-                'initials'      => 'MR',
-                'color'         => '#555555',
-                'unit'          => 'Unit 08',
-                'leasePeriod'   => 'Mar 2023 – Mar 2024',
-                'leaseRemaining'=> '4 Months Remaining',
-                'leaseUrgency'  => 'text-gray-400',
-                'status'        => 'Active',
-                'statusBadge'   => 'green',
-                'payment'       => 'Paid',
-                'paymentIcon'   => '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>',
-                'paymentColor'  => 'text-green-700',
-            ],
-            [
-                'id'            => 4,
-                'name'          => 'Sofia Villamor',
-                'initials'      => 'SV',
-                'color'         => '#7b1fa2',
-                'unit'          => 'Unit 05',
-                'leasePeriod'   => 'Nov 2022 – Nov 2023',
-                'leaseRemaining'=> '1 Month Remaining',
-                'leaseUrgency'  => 'text-red-600',
-                'status'        => 'Active',
-                'statusBadge'   => 'green',
-                'payment'       => 'Overdue',
-                'paymentIcon'   => '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>',
-                'paymentColor'  => 'text-red-600',
-            ],
-        ];
+        $tenant = Tenant::findOrFail($id);
 
-        $tenant = collect($allTenants)->firstWhere('id', $id);
+        return view('tenants.show', ['tenant' => $this->formatTenant($tenant), 'rawTenant' => $tenant]);
+    }
 
-        if (!$tenant) {
-            abort(404);
+    public function edit($id)
+    {
+        $tenant = Tenant::findOrFail($id);
+
+        return view('tenants.edit', compact('tenant'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $tenant = Tenant::findOrFail($id);
+        $tenant->update($this->validateTenant($request));
+
+        return redirect()->route('tenants.show', $tenant)->with('success', 'Tenant updated successfully.');
+    }
+
+    public function destroy($id)
+    {
+        $tenant = Tenant::findOrFail($id);
+        $tenant->delete();
+
+        return redirect()->route('tenants')->with('success', 'Tenant deleted successfully.');
+    }
+
+    private function validateTenant(Request $request): array
+    {
+        return $request->validate([
+            'name' => 'required|string|max:255',
+            'unit' => 'required|string|max:100',
+            'occupants' => 'required|integer|min:1|max:20',
+            'email' => 'nullable|email|max:255',
+            'phone' => 'nullable|string|max:30',
+            'lease_start' => 'nullable|date',
+            'lease_end' => 'nullable|date|after_or_equal:lease_start',
+            'status' => ['required', Rule::in(['Active', 'Renewal Sent', 'Pending', 'Overdue'])],
+            'payment_status' => ['required', Rule::in(['Paid', 'Pending', 'Overdue'])],
+            'notes' => 'nullable|string|max:1000',
+        ]);
+    }
+
+    private function formatTenant(Tenant $tenant): array
+    {
+        $now = Carbon::today();
+        $leaseRemaining = 'No End Date';
+        $leaseUrgency = 'text-gray-400';
+
+        if ($tenant->lease_end) {
+            if ($tenant->lease_end->isPast()) {
+                $leaseRemaining = 'Expired';
+                $leaseUrgency = 'text-red-600';
+            } else {
+                $days = $now->diffInDays($tenant->lease_end);
+                if ($days <= 30) {
+                    $leaseRemaining = "Expiring in {$days} Days";
+                    $leaseUrgency = 'text-orange-500';
+                } else {
+                    $months = $now->diffInMonths($tenant->lease_end);
+                    $leaseRemaining = "{$months} Months Remaining";
+                    $leaseUrgency = 'text-gray-400';
+                }
+            }
         }
 
-        return view('tenants.show', compact('tenant'));
+        return [
+            'id' => $tenant->id,
+            'name' => $tenant->name,
+            'initials' => $this->generateInitials($tenant->name),
+            'color' => $this->generateAvatarColor($tenant->name),
+            'unit' => $tenant->unit,
+            'leasePeriod' => $tenant->lease_start && $tenant->lease_end ? $tenant->lease_start->format('M Y') . ' – ' . $tenant->lease_end->format('M Y') : 'N/A',
+            'leaseRemaining' => $leaseRemaining,
+            'leaseUrgency' => $leaseUrgency,
+            'status' => $tenant->status,
+            'statusBadge' => $this->statusBadge($tenant->status),
+            'payment' => $tenant->payment_status,
+            'paymentIcon' => $this->paymentIcon($tenant->payment_status),
+            'paymentColor' => $this->paymentColor($tenant->payment_status),
+            'email' => $tenant->email,
+            'phone' => $tenant->phone,
+            'notes' => $tenant->notes,
+            'occupants' => $tenant->occupants,
+            'lease_start' => $tenant->lease_start?->format('M d, Y'),
+            'lease_end' => $tenant->lease_end?->format('M d, Y'),
+        ];
+    }
+
+    private function generateInitials(string $name): string
+    {
+        return collect(explode(' ', $name))->filter()->map(fn ($part) => strtoupper(substr($part, 0, 1)))->take(2)->join('');
+    }
+
+    private function generateAvatarColor(string $name): string
+    {
+        $colors = ['#7c3a1e', '#1565c0', '#555555', '#7b1fa2', '#0f766e', '#b45309'];
+        return $colors[crc32($name) % count($colors)];
+    }
+
+    private function statusBadge(string $status): string
+    {
+        return match ($status) {
+            'Active' => 'green',
+            'Renewal Sent' => 'orange',
+            default => 'gray',
+        };
+    }
+
+    private function paymentIcon(string $paymentStatus): string
+    {
+        return match ($paymentStatus) {
+            'Paid' => '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>',
+            'Pending' => '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>',
+            default => '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>',
+        };
+    }
+
+    private function paymentColor(string $paymentStatus): string
+    {
+        return match ($paymentStatus) {
+            'Paid' => 'text-green-700',
+            'Pending' => 'text-orange-500',
+            default => 'text-red-600',
+        };
     }
 }
