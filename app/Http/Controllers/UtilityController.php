@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Tenant;
 use Illuminate\Http\Request;
 
 class UtilityController extends Controller
@@ -12,6 +13,15 @@ class UtilityController extends Controller
         if ($selectedFloor < 1 || $selectedFloor > 3) {
             $selectedFloor = 1;
         }
+
+        $tenantRooms = Tenant::query()
+            ->whereNotNull('unit')
+            ->get()
+            ->mapWithKeys(function (Tenant $tenant) {
+                $roomNumber = $this->normalizeRoomNumber($tenant->unit);
+                return $roomNumber ? [$roomNumber => $tenant->name] : [];
+            })
+            ->all();
 
         $roomsByFloor = [
             1 => [
@@ -64,13 +74,51 @@ class UtilityController extends Controller
             ['value' => 3, 'label' => 'Level 03', 'count' => count($roomsByFloor[3]), 'active' => $selectedFloor === 3],
         ];
 
+        $rooms = $this->applyTenantOccupancy($roomsByFloor[$selectedFloor], $tenantRooms);
+        $allRooms = [];
+        foreach ($roomsByFloor as $floorRooms) {
+            $allRooms = array_merge($allRooms, $this->applyTenantOccupancy($floorRooms, $tenantRooms));
+        }
+
+        $totalUnits = count($allRooms);
+        $occupied = count(array_filter($allRooms, fn ($room) => $room['status'] === 'occupied'));
+        $vacant = count(array_filter($allRooms, fn ($room) => $room['status'] === 'vacant'));
+        $maintenance = count(array_filter($allRooms, fn ($room) => $room['status'] === 'repair'));
+
         return view('utility.index', [
-            'totalUnits'  => 48,
-            'occupied'    => 36,
-            'vacant'      => 9,
-            'maintenance' => 3,
+            'totalUnits'  => $totalUnits,
+            'occupied'    => $occupied,
+            'vacant'      => $vacant,
+            'maintenance' => $maintenance,
             'floors'      => $floors,
-            'rooms'       => $roomsByFloor[$selectedFloor],
+            'rooms'       => $rooms,
         ]);
+    }
+
+    private function normalizeRoomNumber(string $unit): ?string
+    {
+        if (preg_match('/\d+/', $unit, $matches)) {
+            return ltrim($matches[0], '0') === '' ? $matches[0] : $matches[0];
+        }
+
+        return null;
+    }
+
+    private function applyTenantOccupancy(array $rooms, array $tenantRooms): array
+    {
+        return array_map(function ($room) use ($tenantRooms) {
+            $roomNumber = ltrim($room['number'], '0');
+
+            if (isset($tenantRooms[$roomNumber])) {
+                return [
+                    'number' => $room['number'],
+                    'status' => 'occupied',
+                    'statusClass' => 'room-card-occupied',
+                    'tenant' => $tenantRooms[$roomNumber],
+                ];
+            }
+
+            return $room;
+        }, $rooms);
     }
 }
