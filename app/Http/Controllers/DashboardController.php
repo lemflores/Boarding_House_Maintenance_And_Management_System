@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Payment;
 
 class DashboardController extends Controller
 {
@@ -42,25 +43,58 @@ class DashboardController extends Controller
                 ],
             ],
 
-            'activityLog' => [
-                [
-                    'dotColor' => 'bg-green-500',
-                    'title'    => 'Unit 205 Renewed',
-                    'desc'     => 'Mr. Garcia signed for 12 months. 44M AGO',
-                ],
-                [
-                    'dotColor' => 'bg-orange-400',
-                    'title'    => 'Payment Received',
-                    'desc'     => '₱18,500.00 from Unit 116. 1H AGO',
-                ],
-                [
-                    'dotColor' => 'bg-blue-400',
-                    'title'    => 'New Viewing',
-                    'desc'     => 'Penthouse A scheduled for Sat 2pm. 3H AGO',
-                ],
-            ],
+            'activityLog' => $this->buildActivityLog(),
         ];
 
         return view('dashboard.index', $data);
+    }
+
+    private function buildActivityLog(): array
+    {
+        $payments = Payment::with('tenant')
+            ->orderByDesc('updated_at')
+            ->limit(3)
+            ->get();
+
+        $activityLog = $payments->map(function (Payment $payment) {
+            $unit = $payment->tenant->unit ?? 'N/A';
+            $amount = '₱' . number_format($payment->amount, 2);
+
+            if ($payment->status === 'paid') {
+                $time = $payment->payment_date ? $payment->payment_date : $payment->updated_at;
+
+                return [
+                    'dotColor' => 'bg-green-500',
+                    'title'    => 'Payment Received',
+                    'desc'     => "{$amount} from Unit {$unit} · {$time->diffForHumans()}",
+                ];
+            }
+
+            if ($payment->status === 'overdue') {
+                return [
+                    'dotColor' => 'bg-orange-400',
+                    'title'    => 'Overdue Payment',
+                    'desc'     => "Unit {$unit} overdue since {$payment->due_date->format('M d')} · {$amount}",
+                ];
+            }
+
+            return [
+                'dotColor' => 'bg-blue-400',
+                'title'    => 'Upcoming Payment',
+                'desc'     => "Unit {$unit} due on {$payment->due_date->format('M d')} · {$amount}",
+            ];
+        })->filter()->values()->all();
+
+        if (empty($activityLog)) {
+            return [
+                [
+                    'dotColor' => 'bg-gray-300',
+                    'title'    => 'No recent activity yet',
+                    'desc'     => 'Once payments or tenant actions happen, they will appear here.',
+                ],
+            ];
+        }
+
+        return $activityLog;
     }
 }

@@ -120,7 +120,7 @@
     <div class="bg-white rounded-xl border border-[#ede7df] p-5">
         <h3 class="text-[15px] font-bold text-[#2d1a0e] mb-4">Activity Log</h3>
         <div class="space-y-4">
-            @foreach ($activityLog as $log)
+            @forelse ($activityLog as $log)
             <div class="flex gap-3 items-start">
                 <div class="w-2.5 h-2.5 rounded-full mt-[3px] flex-shrink-0 {{ $log['dotColor'] }}"></div>
                 <div>
@@ -128,9 +128,11 @@
                     <p class="text-[11px] text-gray-400 mt-0.5 leading-snug">{{ $log['desc'] }}</p>
                 </div>
             </div>
-            @endforeach
+            @empty
+            <div class="text-[12px] text-gray-500">No recent activity available.</div>
+            @endforelse
         </div>
-        <a href="#" class="inline-block text-[12px] text-[#7c3a1e] hover:text-[#5c2910] font-semibold mt-5 transition-colors">
+        <a href="{{ route('finances') }}" class="inline-block text-[12px] text-[#7c3a1e] hover:text-[#5c2910] font-semibold mt-5 transition-colors">
             View All Activity
         </a>
     </div>
