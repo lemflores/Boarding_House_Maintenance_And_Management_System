@@ -50,7 +50,9 @@ class TenantController extends Controller
 
     public function create()
     {
-        return view('tenants.create');
+        // Get all available units from utility tracking
+        $availableUnits = $this->getAvailableUnits();
+        return view('tenants.create', compact('availableUnits'));
     }
 
     public function store(Request $request)
@@ -70,8 +72,8 @@ class TenantController extends Controller
     public function edit($id)
     {
         $tenant = Tenant::findOrFail($id);
-
-        return view('tenants.edit', compact('tenant'));
+        $availableUnits = $this->getAvailableUnits();
+        return view('tenants.edit', compact('tenant', 'availableUnits'));
     }
 
     public function update(Request $request, $id)
@@ -97,9 +99,9 @@ class TenantController extends Controller
             'unit' => 'required|string|max:100',
             'occupants' => 'required|integer|min:1|max:20',
             'email' => 'nullable|email|max:255',
-            'phone' => 'nullable|string|max:30',
-            'lease_start' => 'nullable|date',
-            'lease_end' => 'nullable|date|after_or_equal:lease_start',
+            'phone' => 'required|string|max:30',
+            'lease_start' => 'required|date',
+            'lease_end' => 'required|date|after_or_equal:lease_start',
             'status' => ['required', Rule::in(['Active', 'Renewal Sent', 'Pending', 'Overdue'])],
             'payment_status' => ['required', Rule::in(['Paid', 'Pending', 'Overdue'])],
             'notes' => 'nullable|string|max:1000',
@@ -188,5 +190,39 @@ class TenantController extends Controller
             'Pending' => 'text-orange-500',
             default => 'text-red-600',
         };
+    }
+
+    private function getAvailableUnits(): array
+    {
+        $roomsByFloor = [
+            1 => ['101', '102', '103', '104', '105', '106', '107', '108', '109', '110', '111', '112'],
+            2 => ['201', '202', '203', '204', '205', '206', '207', '208', '209', '210', '211', '212'],
+            3 => ['301', '302', '303', '304', '305', '306', '307', '308', '309', '310', '311', '312'],
+        ];
+
+        $allRooms = [];
+        foreach ($roomsByFloor as $floorRooms) {
+            $allRooms = array_merge($allRooms, $floorRooms);
+        }
+
+        // Get occupied units
+        $occupiedUnits = Tenant::whereNotNull('unit')
+            ->pluck('unit')
+            ->map(fn ($unit) => $this->normalizeRoomNumber($unit))
+            ->filter()
+            ->toArray();
+
+        // Get available/vacant units only
+        $availableUnits = array_diff($allRooms, $occupiedUnits);
+        
+        return array_values(sort($availableUnits) ? $availableUnits : $availableUnits);
+    }
+
+    private function normalizeRoomNumber(string $unit): ?string
+    {
+        if (preg_match('/\d+/', $unit, $matches)) {
+            return $matches[0];
+        }
+        return null;
     }
 }
