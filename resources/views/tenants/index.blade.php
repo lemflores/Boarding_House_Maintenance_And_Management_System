@@ -106,19 +106,27 @@ Add New Tenant
                     </span>
                 </td>
                 <td class="px-4 py-4">
-                    <div class="relative">
-                        <button class="text-gray-300 hover:text-gray-500 text-xl leading-none px-1 transition-colors" onclick="toggleDropdown({{ $tenant['id'] }})">⋮</button>
-                        <div id="dropdown-{{ $tenant['id'] }}" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 hidden">
-                            <div class="py-1">
-                                <a href="{{ route('tenants.show', $tenant['id']) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">View Details</a>
-                                <a href="{{ route('tenants.edit', $tenant['id']) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Edit Tenant</a>
-                                <form method="POST" action="{{ route('tenants.destroy', $tenant['id']) }}" onsubmit="return confirm('Delete this tenant?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Delete Tenant</button>
-                                </form>
-                            </div>
-                        </div>
+                    <div class="flex items-center gap-2">
+                        <a href="{{ route('tenants.show', $tenant['id']) }}" class="text-gray-400 hover:text-blue-600 transition-colors p-1" title="View Details">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                        </a>
+                        <a href="{{ route('tenants.edit', $tenant['id']) }}" class="text-gray-400 hover:text-amber-600 transition-colors p-1" title="Edit Tenant">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 9.75a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+                            </svg>
+                        </a>
+                        <form method="POST" action="{{ route('tenants.destroy', $tenant['id']) }}" onsubmit="return confirm('Delete this tenant?');" class="inline">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="text-gray-400 hover:text-red-600 transition-colors p-1" title="Delete Tenant">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 2.98a1.125 1.125 0 00-2.228-.015L9.591 5.6M5.106 5.4A2.625 2.625 0 103.675 3.98m0 13.621a8.002 8.002 0 01-5.022-2.478A8.002 8.002 0 015.106 19.02M19.5 9.5c0 .828-.672 1.5-1.5 1.5s-1.5-.672-1.5-1.5.672-1.5 1.5-1.5 1.5.672 1.5 1.5z" />
+                                </svg>
+                            </button>
+                        </form>
                     </div>
                 </td>
             </tr>
@@ -150,19 +158,3 @@ Add New Tenant
 </div>
 
 @endsection
-
-<script>
-function toggleDropdown(id) {
-    const dropdown = document.getElementById('dropdown-' + id);
-    dropdown.classList.toggle('hidden');
-}
-
-// Close dropdown when clicking outside
-document.addEventListener('click', function(event) {
-    if (!event.target.closest('.relative')) {
-        document.querySelectorAll('[id^="dropdown-"]').forEach(dropdown => {
-            dropdown.classList.add('hidden');
-        });
-    }
-});
-</script>

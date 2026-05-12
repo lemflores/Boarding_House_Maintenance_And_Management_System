@@ -109,37 +109,52 @@
                     @endif
                 </td>
                 <td class="px-4 py-4">
-                    <div class="relative">
-                        <button class="text-gray-300 hover:text-gray-500 text-xl leading-none px-1 transition-colors" onclick="toggleDropdown({{ $txn['id'] }})">⋮</button>
-                        <div id="dropdown-{{ $txn['id'] }}" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 hidden">
-                            <div class="py-1">
-                                @if ($txn['status'] === 'OVERDUE')
-                                    <form method="POST" action="{{ route('finances.notify', $txn['id']) }}">
-                                        @csrf
-                                        <button type="submit" class="w-full text-left px-4 py-2 text-sm text-orange-600 hover:bg-gray-100">Notify Tenant</button>
-                                    </form>
-                                    <form method="POST" action="{{ route('finances.mark-paid', $txn['id']) }}">
-                                        @csrf
-                                        <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mark as Paid</button>
-                                    </form>
-                                @elseif ($txn['status'] === 'PENDING')
-                                    <form method="POST" action="{{ route('finances.mark-paid', $txn['id']) }}">
-                                        @csrf
-                                        <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mark as Paid</button>
-                                    </form>
-                                @else
-                                    <form method="POST" action="{{ route('finances.mark-overdue', $txn['id']) }}">
-                                        @csrf
-                                        <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mark as Overdue</button>
-                                    </form>
-                                @endif
-                                <form method="POST" action="{{ route('finances.destroy', $txn['id']) }}" onsubmit="return confirm('Are you sure you want to delete this payment record?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Delete Payment</button>
-                                </form>
-                            </div>
-                        </div>
+                    <div class="flex items-center gap-2">
+                        @if ($txn['status'] === 'OVERDUE')
+                            <form method="POST" action="{{ route('finances.notify', $txn['id']) }}" class="inline">
+                                @csrf
+                                <button type="submit" class="text-gray-400 hover:text-orange-600 transition-colors p-1" title="Notify Tenant">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0M3.124 7.5A6.375 6.375 0 0110.5 1.5H6.375A6.375 6.375 0 003.124 7.5z" />
+                                    </svg>
+                                </button>
+                            </form>
+                            <form method="POST" action="{{ route('finances.mark-paid', $txn['id']) }}" class="inline">
+                                @csrf
+                                <button type="submit" class="text-gray-400 hover:text-green-600 transition-colors p-1" title="Mark as Paid">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </button>
+                            </form>
+                        @elseif ($txn['status'] === 'PENDING')
+                            <form method="POST" action="{{ route('finances.mark-paid', $txn['id']) }}" class="inline">
+                                @csrf
+                                <button type="submit" class="text-gray-400 hover:text-green-600 transition-colors p-1" title="Mark as Paid">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </button>
+                            </form>
+                        @else
+                            <form method="POST" action="{{ route('finances.mark-overdue', $txn['id']) }}" class="inline">
+                                @csrf
+                                <button type="submit" class="text-gray-400 hover:text-red-600 transition-colors p-1" title="Mark as Overdue">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126c-.866 1.5-.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126Z" />
+                                    </svg>
+                                </button>
+                            </form>
+                        @endif
+                        <form method="POST" action="{{ route('finances.destroy', $txn['id']) }}" onsubmit="return confirm('Are you sure you want to delete this payment record?');" class="inline">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="text-gray-400 hover:text-red-600 transition-colors p-1" title="Delete Payment">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 2.98a1.125 1.125 0 00-2.228-.015L9.591 5.6M5.106 5.4A2.625 2.625 0 103.675 3.98m0 13.621a8.002 8.002 0 01-5.022-2.478A8.002 8.002 0 015.106 19.02M19.5 9.5c0 .828-.672 1.5-1.5 1.5s-1.5-.672-1.5-1.5.672-1.5 1.5-1.5 1.5.672 1.5 1.5z" />
+                                </svg>
+                            </button>
+                        </form>
                     </div>
                 </td>
             </tr>
@@ -163,19 +178,3 @@
 </div>
 
 @endsection
-
-<script>
-function toggleDropdown(id) {
-    const dropdown = document.getElementById('dropdown-' + id);
-    dropdown.classList.toggle('hidden');
-}
-
-// Close dropdown when clicking outside
-document.addEventListener('click', function(event) {
-    if (!event.target.closest('.relative')) {
-        document.querySelectorAll('[id^="dropdown-"]').forEach(dropdown => {
-            dropdown.classList.add('hidden');
-        });
-    }
-});
-</script>
