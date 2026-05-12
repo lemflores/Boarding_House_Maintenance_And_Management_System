@@ -68,8 +68,8 @@
                     </tr>
                 </thead>
                 <tbody id="maintenanceTableBody">
-                    @foreach ($tickets as $ticket)
-                    @if($ticket['status'] !== 'RESOLVED')
+                    @php $activeTickets = collect($tickets)->where('status', '!=', 'RESOLVED'); @endphp
+                    @forelse ($activeTickets as $ticket)
                     <tr id="ticket-row-{{ $ticket['id'] }}" class="border-t border-[#f0ebe5] hover:bg-[#faf7f4] transition-colors ticket-row" data-ticket-id="{{ $ticket['id'] }}" data-subject="{{ $ticket['subject'] }}" data-location="{{ $ticket['location'] }}" data-status="{{ $ticket['status'] }}">
                         <td class="px-4 py-3.5 font-mono text-[11px] text-gray-400">{{ $ticket['ref'] }}</td>
                         <td class="px-4 py-3.5 text-[13px] font-semibold text-[#2d1a0e]">{{ $ticket['subject'] }}</td>
@@ -126,8 +126,11 @@
                             </button>
                         </td>
                     </tr>
-                    @endif
-                    @endforeach
+                    @empty
+                    <tr class="border-t border-[#f0ebe5]">
+                        <td colspan="8" class="px-4 py-8 text-center text-gray-500">No maintenance reports have been added yet.</td>
+                    </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
@@ -167,34 +170,6 @@
                 @endforeach
             </div>
         </div>
-
-        {{-- Priority label --}}
-        <h3 class="text-[13px] font-bold text-[#2d1a0e]">Priority Maintenance</h3>
-
-        {{-- Priority Card --}}
-        @php
-            $priorityTicket = collect($tickets)->where('status', '!=', 'RESOLVED')->sortBy(function($t) {
-                return ($t['priority'] === 'URGENT' ? 0 : ($t['priority'] === 'NORMAL' ? 1 : 2));
-            })->first();
-        @endphp
-        
-        @if($priorityTicket)
-        <div class="bg-white rounded-xl border border-[#ede7df] p-4">
-            <div class="flex items-start gap-3">
-                <div class="w-11 h-11 @if($priorityTicket['priority'] === 'URGENT') bg-red-100 @elseif($priorityTicket['priority'] === 'NORMAL') bg-orange-100 @else bg-blue-100 @endif rounded-xl flex items-center justify-center text-[20px] flex-shrink-0"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
-                    </svg>
-</div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-start gap-2 flex-wrap">
-                        <span class="text-[13px] font-bold text-[#2d1a0e] leading-snug">{{ $priorityTicket['location'] }} – {{ $priorityTicket['subject'] }}</span>
-                        <span class="@if($priorityTicket['priority'] === 'URGENT') bg-red-100 text-red-700 @elseif($priorityTicket['priority'] === 'NORMAL') bg-orange-100 text-orange-700 @else bg-blue-100 text-blue-700 @endif text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-wide whitespace-nowrap">{{ $priorityTicket['priority'] === 'URGENT' ? 'High Priority' : ($priorityTicket['priority'] === 'NORMAL' ? 'Normal' : 'Medium') }}</span>
-                    </div>
-                    <p class="text-[11px] text-gray-400 mt-1">Reported · {{ $priorityTicket['reported'] }}</p>
-                </div>
-            </div>
-        </div>
-        @endif
 
         {{-- Summary Stats --}}
         <div class="bg-white rounded-xl border border-[#ede7df] p-5">

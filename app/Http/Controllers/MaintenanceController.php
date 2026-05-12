@@ -10,6 +10,15 @@ class MaintenanceController extends Controller
     // Static storage for demonstration (in production, use database)
     private static $ticketsStorage = null;
 
+    public static function getTickets()
+    {
+        if (self::$ticketsStorage === null) {
+            self::$ticketsStorage = (new self)->getDefaultTickets();
+        }
+
+        return self::$ticketsStorage;
+    }
+
     private function getTicketsStorage()
     {
         if (self::$ticketsStorage === null) {
@@ -20,68 +29,7 @@ class MaintenanceController extends Controller
 
     private function getDefaultTickets()
     {
-        return [
-            [
-                'id'              => 1,
-                'ref'             => '#MT-882',
-                'subject'         => 'Air Conditioning Leak',
-                'location'        => 'Unit 103',
-                'assigned'        => false,
-                'assignedInitials'=> '',
-                'priority'        => 'URGENT',
-                'status'          => 'NEW',
-                'reported'        => '1h ago',
-                'date'            => now()->format('Y-m-d'),
-            ],
-            [
-                'id'              => 2,
-                'ref'             => '#MT-878',
-                'subject'         => 'Kitchen Tap Plumbing',
-                'location'        => 'Unit 219',
-                'assigned'        => true,
-                'assignedInitials'=> 'LMF',
-                'priority'        => 'URGENT',
-                'status'          => 'IN PROGRESS',
-                'reported'        => '4h ago',
-                'date'            => now()->format('Y-m-d'),
-            ],
-            [
-                'id'              => 3,
-                'ref'             => '#MT-885',
-                'subject'         => 'Gate Repair',
-                'location'        => 'Main Entrance',
-                'assigned'        => false,
-                'assignedInitials'=> '',
-                'priority'        => 'NORMAL',
-                'status'          => 'NEW',
-                'reported'        => '5h ago',
-                'date'            => now()->format('Y-m-d'),
-            ],
-            [
-                'id'              => 4,
-                'ref'             => '#MT-895',
-                'subject'         => 'Electrical Panel Upgrade',
-                'location'        => 'Utility Room B',
-                'assigned'        => true,
-                'assignedInitials'=> 'LMF',
-                'priority'        => 'MEDIUM',
-                'status'          => 'IN PROGRESS',
-                'reported'        => '1d ago',
-                'date'            => now()->subDay()->format('Y-m-d'),
-            ],
-            [
-                'id'              => 5,
-                'ref'             => '#MT-897',
-                'subject'         => 'Light Bulb Replacement',
-                'location'        => '2nd Floor Hallway',
-                'assigned'        => true,
-                'assignedInitials'=> 'LMF',
-                'priority'        => 'MEDIUM',
-                'status'          => 'IN PROGRESS',
-                'reported'        => '1d ago',
-                'date'            => now()->subDay()->format('Y-m-d'),
-            ],
-        ];
+        return [];
     }
 
     public function index(Request $request)

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\MaintenanceController;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
 
@@ -23,49 +24,29 @@ class UtilityController extends Controller
             })
             ->all();
 
+        $maintenanceRooms = collect(MaintenanceController::getTickets())
+            ->mapWithKeys(function ($ticket) {
+                $roomNumber = $this->normalizeRoomNumber($ticket['location']);
+                return $roomNumber ? [$roomNumber => $ticket] : [];
+            })
+            ->all();
+
         $roomsByFloor = [
-            1 => [
-                ['number' => '101', 'status' => 'occupied', 'statusClass' => 'room-card-occupied', 'tenant' => 'Mateo Dela Cruz'],
-                ['number' => '102', 'status' => 'repair',   'statusClass' => 'room-card-repair',   'issue' => 'AC Unit Leakage',    'subNote' => 'PENDING WO'],
-                ['number' => '103', 'status' => 'vacant',   'statusClass' => 'room-card-vacant',   'note' => 'Immediate Move-in'],
-                ['number' => '104', 'status' => 'occupied', 'statusClass' => 'room-card-occupied', 'tenant' => 'Rafael Santos'],
-                ['number' => '105', 'status' => 'occupied', 'statusClass' => 'room-card-occupied', 'tenant' => 'Carlos Yulo'],
-                ['number' => '106', 'status' => 'vacant',   'statusClass' => 'room-card-vacant',   'note' => 'Cleaning in Progress'],
-                ['number' => '107', 'status' => 'occupied', 'statusClass' => 'room-card-occupied', 'tenant' => 'Isabella Luna'],
-                ['number' => '108', 'status' => 'occupied', 'statusClass' => 'room-card-occupied', 'tenant' => 'Rafael Santos'],
-                ['number' => '109', 'status' => 'vacant',   'statusClass' => 'room-card-vacant',   'note' => 'Open for Viewing'],
-                ['number' => '110', 'status' => 'repair',   'statusClass' => 'room-card-repair',   'issue' => 'Flooring Renewal',   'subNote' => ''],
-                ['number' => '111', 'status' => 'occupied', 'statusClass' => 'room-card-occupied', 'tenant' => 'Elena Soriano'],
-                ['number' => '112', 'status' => 'occupied', 'statusClass' => 'room-card-occupied', 'tenant' => 'Miguel Tan'],
-            ],
-            2 => [
-                ['number' => '201', 'status' => 'vacant',   'statusClass' => 'room-card-vacant',   'note' => 'Open for Viewing'],
-                ['number' => '202', 'status' => 'occupied', 'statusClass' => 'room-card-occupied', 'tenant' => 'Ariel Mendoza'],
-                ['number' => '203', 'status' => 'occupied', 'statusClass' => 'room-card-occupied', 'tenant' => 'Jessa Cruz'],
-                ['number' => '204', 'status' => 'repair',   'statusClass' => 'room-card-repair',   'issue' => 'Plumbing Leak',      'subNote' => 'Parts Ordered'],
-                ['number' => '205', 'status' => 'vacant',   'statusClass' => 'room-card-vacant',   'note' => 'Immediate Move-in'],
-                ['number' => '206', 'status' => 'occupied', 'statusClass' => 'room-card-occupied', 'tenant' => 'Marco Villanueva'],
-                ['number' => '207', 'status' => 'occupied', 'statusClass' => 'room-card-occupied', 'tenant' => 'Leah Santos'],
-                ['number' => '208', 'status' => 'repair',   'statusClass' => 'room-card-repair',   'issue' => 'Broken Window',      'subNote' => 'Estimate Sent'],
-                ['number' => '209', 'status' => 'vacant',   'statusClass' => 'room-card-vacant',   'note' => 'Cleaning in Progress'],
-                ['number' => '210', 'status' => 'occupied', 'statusClass' => 'room-card-occupied', 'tenant' => 'Jonas Rivera'],
-                ['number' => '211', 'status' => 'occupied', 'statusClass' => 'room-card-occupied', 'tenant' => 'Nina Alonzo'],
-                ['number' => '212', 'status' => 'vacant',   'statusClass' => 'room-card-vacant',   'note' => 'Available Soon'],
-            ],
-            3 => [
-                ['number' => '301', 'status' => 'occupied', 'statusClass' => 'room-card-occupied', 'tenant' => 'Mika Jose'],
-                ['number' => '302', 'status' => 'vacant',   'statusClass' => 'room-card-vacant',   'note' => 'Immediate Move-in'],
-                ['number' => '303', 'status' => 'repair',   'statusClass' => 'room-card-repair',   'issue' => 'Light Fixture',      'subNote' => 'Electrician Scheduled'],
-                ['number' => '304', 'status' => 'occupied', 'statusClass' => 'room-card-occupied', 'tenant' => 'Paolo Domingo'],
-                ['number' => '305', 'status' => 'vacant',   'statusClass' => 'room-card-vacant',   'note' => 'Open for Viewing'],
-                ['number' => '306', 'status' => 'occupied', 'statusClass' => 'room-card-occupied', 'tenant' => 'Tina Reyes'],
-                ['number' => '307', 'status' => 'vacant',   'statusClass' => 'room-card-vacant',   'note' => 'Cleaning in Progress'],
-                ['number' => '308', 'status' => 'occupied', 'statusClass' => 'room-card-occupied', 'tenant' => 'Dante Hidalgo'],
-                ['number' => '309', 'status' => 'occupied', 'statusClass' => 'room-card-occupied', 'tenant' => 'Carla Lim'],
-                ['number' => '310', 'status' => 'repair',   'statusClass' => 'room-card-repair',   'issue' => 'AC Unit Leak',      'subNote' => 'Pending Repair'],
-                ['number' => '311', 'status' => 'vacant',   'statusClass' => 'room-card-vacant',   'note' => 'Available Soon'],
-                ['number' => '312', 'status' => 'occupied', 'statusClass' => 'room-card-occupied', 'tenant' => 'Rico Dela Cruz'],
-            ],
+            1 => array_map(fn($number) => [
+                'number' => $number,
+                'status' => 'vacant',
+                'note' => 'Available',
+            ], ['101','102','103','104','105','106','107','108','109','110','111','112']),
+            2 => array_map(fn($number) => [
+                'number' => $number,
+                'status' => 'vacant',
+                'note' => 'Available',
+            ], ['201','202','203','204','205','206','207','208','209','210','211','212']),
+            3 => array_map(fn($number) => [
+                'number' => $number,
+                'status' => 'vacant',
+                'note' => 'Available',
+            ], ['301','302','303','304','305','306','307','308','309','310','311','312']),
         ];
 
         $floors = [
@@ -74,10 +55,10 @@ class UtilityController extends Controller
             ['value' => 3, 'label' => 'Level 03', 'count' => count($roomsByFloor[3]), 'active' => $selectedFloor === 3],
         ];
 
-        $rooms = $this->applyTenantOccupancy($roomsByFloor[$selectedFloor], $tenantRooms);
+        $rooms = $this->applyMaintenanceStatus($this->applyTenantOccupancy($roomsByFloor[$selectedFloor], $tenantRooms), $maintenanceRooms);
         $allRooms = [];
         foreach ($roomsByFloor as $floorRooms) {
-            $allRooms = array_merge($allRooms, $this->applyTenantOccupancy($floorRooms, $tenantRooms));
+            $allRooms = array_merge($allRooms, $this->applyMaintenanceStatus($this->applyTenantOccupancy($floorRooms, $tenantRooms), $maintenanceRooms));
         }
 
         $totalUnits = count($allRooms);
@@ -97,8 +78,16 @@ class UtilityController extends Controller
 
     private function normalizeRoomNumber(string $unit): ?string
     {
-        if (preg_match('/\d+/', $unit, $matches)) {
-            return ltrim($matches[0], '0') === '' ? $matches[0] : $matches[0];
+        if (preg_match('/\bUnit\s*(\d{2,3})\b/i', $unit, $matches)) {
+            return $matches[1];
+        }
+
+        if (preg_match('/^\d{2,3}$/', trim($unit))) {
+            return trim($unit);
+        }
+
+        if (preg_match('/\b(\d{3})\b/', $unit, $matches)) {
+            return $matches[1];
         }
 
         return null;
@@ -115,6 +104,25 @@ class UtilityController extends Controller
                     'status' => 'occupied',
                     'statusClass' => 'room-card-occupied',
                     'tenant' => $tenantRooms[$roomNumber],
+                ];
+            }
+
+            return $room;
+        }, $rooms);
+    }
+
+    private function applyMaintenanceStatus(array $rooms, array $maintenanceRooms): array
+    {
+        return array_map(function ($room) use ($maintenanceRooms) {
+            $roomNumber = ltrim($room['number'], '0');
+
+            if (isset($maintenanceRooms[$roomNumber])) {
+                return [
+                    'number' => $room['number'],
+                    'status' => 'repair',
+                    'statusClass' => 'room-card-repair',
+                    'issue' => $maintenanceRooms[$roomNumber]['subject'] ?? 'Maintenance report',
+                    'subNote' => 'Reported',
                 ];
             }
 
