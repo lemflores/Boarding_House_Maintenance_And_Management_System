@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Tenant;
+use Carbon\Carbon;
 use DateTime;
+use Illuminate\Http\Request;
 
 class MaintenanceController extends Controller
 {
@@ -12,19 +14,18 @@ class MaintenanceController extends Controller
 
     public static function getTickets()
     {
-        if (self::$ticketsStorage === null) {
-            self::$ticketsStorage = (new self)->getDefaultTickets();
-        }
-
-        return self::$ticketsStorage;
+        return session()->get('maintenance_tickets', (new self)->getDefaultTickets());
     }
 
     private function getTicketsStorage()
     {
-        if (self::$ticketsStorage === null) {
-            self::$ticketsStorage = $this->getDefaultTickets();
-        }
-        return self::$ticketsStorage;
+        return session()->get('maintenance_tickets', $this->getDefaultTickets());
+    }
+
+    private function saveTickets(array $tickets): void
+    {
+        session()->put('maintenance_tickets', $tickets);
+        self::$ticketsStorage = $tickets;
     }
 
     private function getDefaultTickets()
@@ -85,6 +86,7 @@ class MaintenanceController extends Controller
             'previousYear'      => $previousMonth->format('Y'),
             'nextMonth'         => $nextMonth->format('m'),
             'nextYear'          => $nextMonth->format('Y'),
+            'units'             => $this->getAllRoomUnits(),
         ]);
     }
 
@@ -94,14 +96,17 @@ class MaintenanceController extends Controller
             'subject' => 'required|string|max:255',
             'location' => 'required|string|max:255',
             'priority' => 'required|in:URGENT,NORMAL,MEDIUM',
+            'report_date' => 'required|date',
             'description' => 'nullable|string',
         ]);
 
         $tickets = $this->getTicketsStorage();
         
         // Generate new ID and reference number
-        $newId = max(array_column($tickets, 'id')) + 1;
+        $newId = $tickets ? max(array_column($tickets, 'id')) + 1 : 1;
         $newRef = '#MT-' . str_pad($newId + 900, 3, '0', STR_PAD_LEFT);
+
+        $reportedDate = Carbon::parse($validated['report_date'])->format('M d, Y');
 
         $newTicket = [
             'id'              => $newId,
@@ -109,15 +114,16 @@ class MaintenanceController extends Controller
             'subject'         => $validated['subject'],
             'location'        => $validated['location'],
             'assigned'        => false,
+            'assignedName'    => '',
             'assignedInitials'=> '',
             'priority'        => $validated['priority'],
             'status'          => 'NEW',
-            'reported'        => 'just now',
-            'date'            => now()->format('Y-m-d'),
+            'reported'        => $reportedDate,
+            'date'            => $validated['report_date'],
         ];
 
         $tickets[] = $newTicket;
-        self::$ticketsStorage = $tickets;
+        $this->saveTickets($tickets);
 
         return response()->json([
             'success' => true,
@@ -133,11 +139,44 @@ class MaintenanceController extends Controller
         foreach ($tickets as &$ticket) {
             if ($ticket['id'] == $id) {
                 $ticket['status'] = 'RESOLVED';
-                self::$ticketsStorage = $tickets;
+                $this->saveTickets($tickets);
                 
                 return response()->json([
                     'success' => true,
                     'message' => 'Issue marked as resolved!',
+                    'ticket' => $ticket
+                ]);
+            }
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Ticket not found!'
+        ], 404);
+    }
+
+    public function assignTechnician($id, Request $request)
+    {
+        $validated = $request->validate([
+            'technician' => 'required|string|max:255',
+        ]);
+
+        $tickets = $this->getTicketsStorage();
+
+        foreach ($tickets as &$ticket) {
+            if ($ticket['id'] == $id) {
+                $ticket['assigned'] = true;
+                $ticket['assignedName'] = $validated['technician'];
+                $ticket['assignedInitials'] = $this->generateInitials($validated['technician']);
+                if ($ticket['status'] === 'NEW') {
+                    $ticket['status'] = 'IN PROGRESS';
+                }
+
+                $this->saveTickets($tickets);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Technician assigned successfully!',
                     'ticket' => $ticket
                 ]);
             }
@@ -160,7 +199,7 @@ class MaintenanceController extends Controller
         foreach ($tickets as &$ticket) {
             if ($ticket['id'] == $id) {
                 $ticket['status'] = $validated['status'];
-                self::$ticketsStorage = $tickets;
+                $this->saveTickets($tickets);
                 
                 return response()->json([
                     'success' => true,
@@ -174,5 +213,45 @@ class MaintenanceController extends Controller
             'success' => false,
             'message' => 'Ticket not found!'
         ], 404);
+    }
+
+    private function getAllRoomUnits(): array
+    {
+        $roomsByFloor = [
+            1 => ['101', '102', '103', '104', '105', '106', '107', '108', '109', '110', '111', '112'],
+            2 => ['201', '202', '203', '204', '205', '206', '207', '208', '209', '210', '211', '212'],
+            3 => ['301', '302', '303', '304', '305', '306', '307', '308', '309', '310', '311', '312'],
+        ];
+
+        $occupiedUnits = Tenant::whereNotNull('unit')
+            ->pluck('unit')
+            ->map(fn ($unit) => $this->normalizeRoomNumber($unit))
+            ->filter()
+            ->toArray();
+
+        return array_map(function ($unit) use ($occupiedUnits) {
+            return [
+                'number' => $unit,
+                'occupied' => in_array($unit, $occupiedUnits),
+            ];
+        }, array_merge(...array_values($roomsByFloor)));
+    }
+
+    private function normalizeRoomNumber(string $unit): ?string
+    {
+        if (preg_match('/\d+/', trim($unit), $matches)) {
+            return $matches[0];
+        }
+
+        return null;
+    }
+
+    private function generateInitials(string $name): string
+    {
+        return collect(explode(' ', trim($name)))
+            ->filter()
+            ->map(fn ($part) => strtoupper(substr($part, 0, 1)))
+            ->take(2)
+            ->join('');
     }
 }

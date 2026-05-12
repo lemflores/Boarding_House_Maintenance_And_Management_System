@@ -72,7 +72,7 @@ class TenantController extends Controller
     public function edit($id)
     {
         $tenant = Tenant::findOrFail($id);
-        $availableUnits = $this->getAvailableUnits();
+        $availableUnits = $this->getAvailableUnits($tenant->unit);
         return view('tenants.edit', compact('tenant', 'availableUnits'));
     }
 
@@ -192,7 +192,7 @@ class TenantController extends Controller
         };
     }
 
-    private function getAvailableUnits(): array
+    private function getAvailableUnits(?string $currentUnit = null): array
     {
         $roomsByFloor = [
             1 => ['101', '102', '103', '104', '105', '106', '107', '108', '109', '110', '111', '112'],
@@ -205,17 +205,18 @@ class TenantController extends Controller
             $allRooms = array_merge($allRooms, $floorRooms);
         }
 
-        // Get occupied units
+        // Get occupied units excluding the current tenant unit when editing.
         $occupiedUnits = Tenant::whereNotNull('unit')
+            ->when($currentUnit, fn ($query) => $query->where('unit', '!=', $currentUnit))
             ->pluck('unit')
             ->map(fn ($unit) => $this->normalizeRoomNumber($unit))
             ->filter()
             ->toArray();
 
-        // Get available/vacant units only
         $availableUnits = array_diff($allRooms, $occupiedUnits);
-        
-        return array_values(sort($availableUnits) ? $availableUnits : $availableUnits);
+
+        sort($availableUnits, SORT_NUMERIC);
+        return array_values($availableUnits);
     }
 
     private function normalizeRoomNumber(string $unit): ?string

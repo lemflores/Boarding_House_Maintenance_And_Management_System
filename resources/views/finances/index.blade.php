@@ -100,12 +100,12 @@
                 <td class="px-4 py-4 text-[13px] text-gray-500">{{ $txn['date'] }}</td>
                 <td class="px-4 py-4 text-[13px] font-semibold text-[#2d1a0e]">₱{{ number_format($txn['amount'], 2) }}</td>
                 <td class="px-4 py-4">
-                    @if ($txn['status'] === 'PAID')
-                        <span class="inline-block bg-green-100 text-green-800 text-[11px] font-bold px-2.5 py-0.5 rounded-full">PAID</span>
-                    @elseif ($txn['status'] === 'OVERDUE')
-                        <span class="inline-block bg-red-600 text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full">OVERDUE</span>
+                    @if ($txn['tenantStatus'] === 'Paid')
+                        <span class="inline-block bg-green-100 text-green-800 text-[11px] font-bold px-2.5 py-0.5 rounded-full">Paid</span>
+                    @elseif ($txn['tenantStatus'] === 'Overdue')
+                        <span class="inline-block bg-red-600 text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full">Overdue</span>
                     @else
-                        <span class="inline-block bg-gray-100 text-gray-500 text-[11px] font-bold px-2.5 py-0.5 rounded-full">PENDING</span>
+                        <span class="inline-block bg-blue-100 text-blue-700 text-[11px] font-bold px-2.5 py-0.5 rounded-full">Pending</span>
                     @endif
                 </td>
                 <td class="px-4 py-4">
@@ -136,15 +136,8 @@
                                     </svg>
                                 </button>
                             </form>
-                        @else
-                            <form method="POST" action="{{ route('finances.mark-overdue', $txn['id']) }}" class="inline">
-                                @csrf
-                                <button type="submit" class="text-gray-400 hover:text-red-600 transition-colors p-1" title="Mark as Overdue">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126c-.866 1.5-.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126Z" />
-                                    </svg>
-                                </button>
-                            </form>
+                        @elseif ($txn['status'] === 'PAID')
+                            <span class="text-gray-400 text-[11px]">Paid</span>
                         @endif
                         <form method="POST" action="{{ route('finances.destroy', $txn['id']) }}" onsubmit="return confirm('Are you sure you want to delete this payment record?');" class="inline">
                             @csrf

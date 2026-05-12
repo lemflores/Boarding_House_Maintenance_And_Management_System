@@ -5,15 +5,23 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Payment;
 use App\Models\Tenant;
+use Carbon\Carbon;
 
 class FinanceController extends Controller
 {
     public function index(Request $request)
     {
-        // Update overdue payments
-        Payment::where('due_date', '<', now())
-               ->where('status', 'pending')
-               ->update(['status' => 'overdue']);
+        // Update overdue payments and keep tenant payment status in sync
+        $overduePayments = Payment::where('due_date', '<', now())
+            ->where('status', 'pending')
+            ->get();
+
+        foreach ($overduePayments as $payment) {
+            $payment->update(['status' => 'overdue']);
+            if ($payment->tenant) {
+                $payment->tenant->update(['payment_status' => 'Overdue']);
+            }
+        }
 
         $filter = $request->get('filter', 'all');
         $search = $request->get('search');
@@ -42,6 +50,7 @@ class FinanceController extends Controller
                 'unit' => $payment->tenant->unit,
                 'date' => $payment->due_date->format('M d, Y'),
                 'amount' => $payment->amount,
+                'tenantStatus' => $payment->tenant->payment_status,
                 'status' => strtoupper($payment->status),
             ];
         });
@@ -84,12 +93,19 @@ class FinanceController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        Payment::create([
-            'tenant_id' => $request->tenant_id,
+        $tenant = Tenant::findOrFail($request->tenant_id);
+        $status = now()->greaterThan(Carbon::parse($request->due_date)) ? 'overdue' : 'pending';
+
+        $payment = Payment::create([
+            'tenant_id' => $tenant->id,
             'amount' => $request->amount,
             'due_date' => $request->due_date,
-            'status' => 'pending',
+            'status' => $status,
             'notes' => $request->notes,
+        ]);
+
+        $tenant->update([
+            'payment_status' => $status === 'overdue' ? 'Overdue' : 'Pending',
         ]);
 
         return redirect()->route('finances')->with('success', 'Payment record created successfully.');
@@ -103,6 +119,10 @@ class FinanceController extends Controller
             'payment_date' => now(),
         ]);
 
+        if ($payment->tenant) {
+            $payment->tenant->update(['payment_status' => 'Paid']);
+        }
+
         return redirect()->route('finances')->with('success', 'Payment marked as paid.');
     }
 
@@ -110,6 +130,10 @@ class FinanceController extends Controller
     {
         $payment = Payment::findOrFail($id);
         $payment->update(['status' => 'overdue']);
+
+        if ($payment->tenant) {
+            $payment->tenant->update(['payment_status' => 'Overdue']);
+        }
 
         return redirect()->route('finances')->with('success', 'Payment marked as overdue.');
     }

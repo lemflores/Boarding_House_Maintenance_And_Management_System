@@ -70,7 +70,7 @@
                 <tbody id="maintenanceTableBody">
                     @php $activeTickets = collect($tickets)->where('status', '!=', 'RESOLVED'); @endphp
                     @forelse ($activeTickets as $ticket)
-                    <tr id="ticket-row-{{ $ticket['id'] }}" class="border-t border-[#f0ebe5] hover:bg-[#faf7f4] transition-colors ticket-row" data-ticket-id="{{ $ticket['id'] }}" data-subject="{{ $ticket['subject'] }}" data-location="{{ $ticket['location'] }}" data-status="{{ $ticket['status'] }}">
+                    <tr id="ticket-row-{{ $ticket['id'] }}" class="border-t border-[#f0ebe5] hover:bg-[#faf7f4] transition-colors ticket-row" data-ticket-id="{{ $ticket['id'] }}" data-subject="{{ $ticket['subject'] }}" data-location="{{ $ticket['location'] }}" data-status="{{ $ticket['status'] }}" data-assigned="{{ $ticket['assigned'] ? 'true' : 'false' }}">
                         <td class="px-4 py-3.5 font-mono text-[11px] text-gray-400">{{ $ticket['ref'] }}</td>
                         <td class="px-4 py-3.5 text-[13px] font-semibold text-[#2d1a0e]">{{ $ticket['subject'] }}</td>
                         <td class="px-4 py-3.5 hidden md:table-cell">
@@ -83,8 +83,11 @@
                         </td>
                         <td class="px-4 py-3.5 hidden lg:table-cell">
                             @if ($ticket['assigned'])
-                                <div class="w-7 h-7 rounded-full bg-[#7c3a1e] flex items-center justify-center text-white text-[9px] font-bold">
-                                    {{ $ticket['assignedInitials'] }}
+                                <div class="flex items-center gap-2">
+                                    <div class="w-7 h-7 rounded-full bg-[#7c3a1e] flex items-center justify-center text-white text-[9px] font-bold">
+                                        {{ $ticket['assignedInitials'] }}
+                                    </div>
+                                    <span class="text-[10px] text-gray-500">{{ $ticket['assignedName'] ?? 'Assigned' }}</span>
                                 </div>
                             @else
                                 <div class="flex items-center gap-1.5">
@@ -118,16 +121,24 @@
                         </td>
                         <td class="px-4 py-3.5 text-[11px] text-gray-400 whitespace-nowrap hidden md:table-cell">{{ $ticket['reported'] }}</td>
                         <td class="px-4 py-3.5">
-                            <button onclick="resolveIssue({{ $ticket['id'] }})" class="bg-green-100 hover:bg-green-200 text-green-700 text-[10px] font-bold px-2.5 py-1.5 rounded transition-colors flex items-center gap-1 whitespace-nowrap">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                Resolve
-                            </button>
+                            <div class="flex items-center gap-2">
+                                <button type="button" onclick="assignTechnician({{ $ticket['id'] }})" class="bg-[#f3f4f6] hover:bg-[#e5e7eb] text-[#374151] text-[10px] font-bold px-2.5 py-1.5 rounded transition-colors flex items-center gap-1 whitespace-nowrap" title="Assign technician">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h7.5M8.25 12h7.5M8.25 17.25h7.5" />
+                                    </svg>
+                                    Assign
+                                </button>
+                                <button onclick="resolveIssue({{ $ticket['id'] }})" class="bg-green-100 hover:bg-green-200 text-green-700 text-[10px] font-bold px-2.5 py-1.5 rounded transition-colors flex items-center gap-1 whitespace-nowrap">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    Resolve
+                                </button>
+                            </div>
                         </td>
                     </tr>
                     @empty
-                    <tr class="border-t border-[#f0ebe5]">
+                    <tr id="noReportsRow" class="border-t border-[#f0ebe5]">
                         <td colspan="8" class="px-4 py-8 text-center text-gray-500">No maintenance reports have been added yet.</td>
                     </tr>
                     @endforelse
@@ -216,7 +227,17 @@
 
             <div>
                 <label class="block text-[12px] font-semibold text-[#2d1a0e] mb-2">Location/Unit *</label>
-                <input type="text" name="location" required class="w-full px-3 py-2 border border-[#ede7df] rounded-lg text-[13px] focus:outline-none focus:border-[#7c3a1e]" placeholder="e.g., Unit 102 or Common Area">
+                <select name="location" required class="w-full px-3 py-2 border border-[#ede7df] rounded-lg text-[13px] focus:outline-none focus:border-[#7c3a1e]">
+                    <option value="">Select a unit...</option>
+                    @foreach ($units as $unit)
+                        <option value="Unit {{ $unit['number'] }}">Unit {{ $unit['number'] }}@if($unit['occupied']) (Occupied)@endif</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-[12px] font-semibold text-[#2d1a0e] mb-2">Date Reported *</label>
+                <input type="date" name="report_date" required value="{{ now()->format('Y-m-d') }}" class="w-full px-3 py-2 border border-[#ede7df] rounded-lg text-[13px] focus:outline-none focus:border-[#7c3a1e]">
             </div>
 
             <div>
@@ -291,6 +312,7 @@ function handleAddReport(e) {
     const data = {
         subject: formData.get('subject'),
         location: formData.get('location'),
+        report_date: formData.get('report_date'),
         priority: formData.get('priority'),
         description: formData.get('description'),
     };
@@ -311,6 +333,7 @@ function handleAddReport(e) {
     .then(response => response.json())
     .then(result => {
         if (result.success) {
+            removeNoReportsPlaceholder();
             addTicketRow(result.ticket);
             updateSummaryCounts({ open: 1, unassigned: 1 });
             alert('Maintenance report added to the table.');
@@ -334,10 +357,15 @@ function addTicketRow(ticket) {
     row.dataset.subject = ticket.subject;
     row.dataset.location = ticket.location;
     row.dataset.status = ticket.status;
+    row.dataset.assigned = ticket.assigned ? 'true' : 'false';
 
     const statusLabel = ticket.status === 'NEW'
         ? '<span class="inline-flex items-center gap-1 bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase">New</span>'
         : '<span class="inline-flex items-center gap-1 bg-orange-50 text-orange-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase whitespace-nowrap">In Progress</span>';
+
+    const assignedCell = ticket.assigned
+        ? `<div class="flex items-center gap-2"><div class="w-7 h-7 rounded-full bg-[#7c3a1e] flex items-center justify-center text-white text-[9px] font-bold">${ticket.assignedInitials || ''}</div><span class="text-[10px] text-gray-500">${ticket.assignedName || 'Assigned'}</span></div>`
+        : `<div class="flex items-center gap-1.5"><div class="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 text-[10px]"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg></div><span class="text-[10px] text-gray-400 font-medium uppercase tracking-wide">Unassigned</span></div>`;
 
     const priorityLabel = ticket.priority === 'URGENT'
         ? '<span class="inline-block bg-red-100 text-red-700 text-[10px] font-bold px-2 py-0.5 rounded uppercase">Urgent</span>'
@@ -346,6 +374,8 @@ function addTicketRow(ticket) {
             : '<span class="inline-block bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded uppercase">Medium</span>';
 
     const reportedLabel = ticket.reported || 'just now';
+
+    const assignButtonLabel = ticket.assigned ? 'Reassign' : 'Assign';
 
     row.innerHTML = `
         <td class="px-4 py-3.5 font-mono text-[11px] text-gray-400">${ticket.ref}</td>
@@ -357,24 +387,25 @@ function addTicketRow(ticket) {
             </svg></span>
             <span class="text-[12px] text-gray-500">${ticket.location}</span>
         </td>
-        <td class="px-4 py-3.5 hidden lg:table-cell">
-            <div class="flex items-center gap-1.5">
-                <div class="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 text-[10px]"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                </svg></div>
-                <span class="text-[10px] text-gray-400 font-medium uppercase tracking-wide">Unassigned</span>
-            </div>
-        </td>
+        <td class="px-4 py-3.5 hidden lg:table-cell">${assignedCell}</td>
         <td class="px-4 py-3.5 hidden md:table-cell">${priorityLabel}</td>
         <td class="px-4 py-3.5">${statusLabel}</td>
         <td class="px-4 py-3.5 text-[11px] text-gray-400 whitespace-nowrap hidden md:table-cell">${reportedLabel}</td>
         <td class="px-4 py-3.5">
-            <button onclick="resolveIssue(${ticket.id})" class="bg-green-100 hover:bg-green-200 text-green-700 text-[10px] font-bold px-2.5 py-1.5 rounded transition-colors flex items-center gap-1 whitespace-nowrap">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Resolve
-            </button>
+            <div class="flex items-center gap-2">
+                <button type="button" onclick="assignTechnician(${ticket.id})" class="bg-[#f3f4f6] hover:bg-[#e5e7eb] text-[#374151] text-[10px] font-bold px-2.5 py-1.5 rounded transition-colors flex items-center gap-1 whitespace-nowrap" title="Assign technician">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h7.5M8.25 12h7.5M8.25 17.25h7.5" />
+                    </svg>
+                    ${assignButtonLabel}
+                </button>
+                <button onclick="resolveIssue(${ticket.id})" class="bg-green-100 hover:bg-green-200 text-green-700 text-[10px] font-bold px-2.5 py-1.5 rounded transition-colors flex items-center gap-1 whitespace-nowrap">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Resolve
+                </button>
+            </div>
         </td>
     `;
 
@@ -398,6 +429,78 @@ function updateSummaryCounts(changes) {
     }
 }
 
+function removeNoReportsPlaceholder() {
+    const placeholder = document.getElementById('noReportsRow');
+    if (placeholder) {
+        placeholder.remove();
+    }
+}
+
+function showNoReportsPlaceholder() {
+    const tbody = document.getElementById('maintenanceTableBody');
+    if (!tbody.querySelector('tr')) {
+        const row = document.createElement('tr');
+        row.id = 'noReportsRow';
+        row.className = 'border-t border-[#f0ebe5]';
+        row.innerHTML = '<td colspan="8" class="px-4 py-8 text-center text-gray-500">No maintenance reports have been added yet.</td>';
+        tbody.appendChild(row);
+    }
+}
+
+function assignTechnician(ticketId) {
+    const technician = prompt('Enter technician name to assign (e.g. Alex, Bella, Carlo):');
+    if (!technician) {
+        return;
+    }
+
+    const row = document.getElementById(`ticket-row-${ticketId}`);
+    const assignedBefore = row && row.dataset.assigned === 'true';
+    const oldStatus = row ? row.dataset.status : null;
+
+    fetch(`/maintenance/${ticketId}/assign`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ technician })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && row) {
+            row.dataset.assigned = 'true';
+            row.dataset.assignedName = data.ticket.assignedName;
+            row.dataset.assignedInitials = data.ticket.assignedInitials;
+            row.dataset.status = data.ticket.status;
+
+            const assignedCell = row.querySelector('td:nth-child(4)');
+            if (assignedCell) {
+                assignedCell.innerHTML = `<div class="flex items-center gap-2"><div class="w-7 h-7 rounded-full bg-[#7c3a1e] flex items-center justify-center text-white text-[9px] font-bold">${data.ticket.assignedInitials}</div><span class="text-[10px] text-gray-500">${data.ticket.assignedName}</span></div>`;
+            }
+
+            const statusCell = row.querySelector('td:nth-child(6)');
+            if (statusCell) {
+                statusCell.innerHTML = '<span class="inline-flex items-center gap-1 bg-orange-50 text-orange-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase whitespace-nowrap">In Progress</span>';
+            }
+
+            if (!assignedBefore) {
+                updateSummaryCounts({ unassigned: -1 });
+            }
+            if (oldStatus === 'NEW') {
+                updateSummaryCounts({ open: -1, inProgress: 1 });
+            }
+
+            alert('Technician assigned successfully.');
+        } else {
+            alert('Could not assign technician: ' + (data.message || 'Unexpected error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Unable to assign technician at this time.');
+    });
+}
+
 // Resolve issue function
 function resolveIssue(ticketId) {
     if (!confirm('Delete this issue from the table?')) {
@@ -413,6 +516,10 @@ function resolveIssue(ticketId) {
             updateSummaryCounts({ open: -1, unassigned: -1 });
         } else if (status === 'IN PROGRESS') {
             updateSummaryCounts({ inProgress: -1, unassigned: -1 });
+        }
+
+        if (document.getElementById('maintenanceTableBody').querySelectorAll('tr').length === 0) {
+            showNoReportsPlaceholder();
         }
     }
 
