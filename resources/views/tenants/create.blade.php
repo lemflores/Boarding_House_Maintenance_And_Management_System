@@ -5,8 +5,8 @@
 
 <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-7">
     <div>
-        <h1 class="font-[Playfair_Display] text-[26px] md:text-[32px] font-bold text-[#2d1a0e]">Add New Tenant</h1>
-        <p class="text-sm text-gray-500 mt-1">Create a tenant record to manage lease and payment details.</p>
+        <h1 class="font-[Playfair_Display] text-[26px] md:text-[32px] font-bold text-[#2d1a0e]">New Tenant Application</h1>
+        <p class="text-sm text-gray-500 mt-1">Submit a new tenant application so the lease and payment preview stays in sync.</p>
     </div>
     <a href="{{ route('tenants') }}" class="inline-flex items-center gap-2 border border-[#e5e7eb] text-gray-500 text-[12px] md:text-[13px] font-medium px-4 py-2.5 rounded-lg hover:border-[#7c3a1e] hover:text-[#7c3a1e] transition-colors">
         ← Back to Directory

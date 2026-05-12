@@ -75,7 +75,6 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                 </svg>
             </button>
-            <span class="font-[Playfair_Display] font-bold text-lg md:text-xl text-[#2d1a0e]">NaVi</span>
         </div>
         <div class="relative flex items-center gap-3">
             <button id="topbarNotificationButton" type="button" onclick="toggleTopbarDropdown('notifications')" class="w-8 h-8 rounded-full bg-[#f5f0eb] flex items-center justify-center text-gray-500 hover:bg-[#ede7df] transition-colors text-sm" aria-haspopup="true" aria-expanded="false" aria-controls="topbarNotificationDropdown">

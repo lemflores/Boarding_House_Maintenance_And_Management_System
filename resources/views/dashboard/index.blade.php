@@ -20,7 +20,7 @@
             </div>
             <div>
                 <p class="text-[8px] md:text-[9px] uppercase tracking-[0.12em] text-white/55 font-semibold">Active Rent</p>
-                <p class="text-[18px] md:text-[22px] font-bold mt-0.5">{{ $totalUnits }}</p>
+                <p class="text-[18px] md:text-[22px] font-bold mt-0.5">{{ $activeRent }}</p>
             </div>
         </div>
     </div>
@@ -41,7 +41,7 @@
         <p class="text-[22px] font-bold text-[#2d1a0e]">₱{{ number_format($totalRevenue, 2) }}</p>
         <a href="{{ route('finances') }}"
            class="inline-flex items-center gap-1 text-[11px] text-[#7c3a1e] hover:text-[#5c2910] font-medium mt-1.5 transition-colors">
-          
+            View Ledger
         </a>
     </div>
 
@@ -74,16 +74,19 @@
         </div>
         <p class="text-[22px] font-bold text-[#2d1a0e]">{{ $pendingRequests }} Pending</p>
         <p class="text-[11px] text-gray-400 mt-1">{{ $inProgressRequests }} In Progress &nbsp;·&nbsp; {{ $resolvedRequests }} Resolved</p>
+        <a href="{{ route('maintenance') }}" class="inline-flex items-center gap-1 text-[11px] text-[#7c3a1e] hover:text-[#5c2910] font-medium mt-3 transition-colors">
+            View Requests
+        </a>
     </div>
 
     {{-- Onboarding --}}
     <div class="bg-[#1e3a1e] rounded-xl p-5 text-white">
         <p class="text-[9px] font-semibold uppercase tracking-[0.12em] text-green-300/70 mb-2">Onboarding</p>
         <p class="font-[Playfair_Display] text-[22px] font-bold leading-tight">{{ $newApplicants }} New<br>Applicants</p>
-        <p class="text-[11px] text-white/50 mt-1 mb-3">Awaiting for Approval</p>
-        <button class="bg-[#6fcf4a] hover:bg-[#5ab83a] text-[#1a3310] text-[11px] font-bold px-4 py-1.5 rounded-full transition-colors">
-            Review Queue
-        </button>
+        <p class="text-[11px] text-white/50 mt-1 mb-3">Awaiting approval or application review</p>
+        <a href="{{ route('tenants.create') }}" class="inline-flex items-center gap-1 bg-[#6fcf4a] hover:bg-[#5ab83a] text-[#1a3310] text-[11px] font-bold px-4 py-1.5 rounded-full transition-colors">
+            Add New Applicant
+        </a>
     </div>
 </div>
 

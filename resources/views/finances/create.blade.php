@@ -67,27 +67,46 @@
                 @error('tenant_id')<p class="text-red-600 text-xs mt-1">{{ $message }}</p>@enderror
             </div>
 
-            {{-- Amount --}}
+            {{-- Months to Pay --}}
             <div>
-                <label for="amount" class="block text-[11px] font-semibold uppercase tracking-[0.12em] text-gray-500 mb-2">
-                    Amount (₱) <span class="text-red-500">*</span>
+                <label for="months" class="block text-[11px] font-semibold uppercase tracking-[0.12em] text-gray-500 mb-2">
+                    Months to Pay <span class="text-red-500">*</span>
                 </label>
-                <input type="number" name="amount" id="amount" step="0.01" min="0" required
-                       value="{{ old('amount') }}"
-                       class="w-full px-4 py-3 border border-[#e5e7eb] rounded-lg text-[14px] focus:border-[#7c3a1e] focus:outline-none"
-                       placeholder="e.g. 5000.00">
-                @error('amount')<p class="text-red-600 text-xs mt-1">{{ $message }}</p>@enderror
+                <select name="months" id="months" required
+                        class="w-full px-4 py-3 border border-[#e5e7eb] rounded-lg text-[14px] focus:border-[#7c3a1e] focus:outline-none"
+                        onchange="updatePaymentAmount()">
+                    <option value="">-- Select number of months --</option>
+                    <option value="1" {{ old('months') == 1 ? 'selected' : '' }}>1 Month (₱3,000)</option>
+                    <option value="2" {{ old('months') == 2 ? 'selected' : '' }}>2 Months (₱6,000)</option>
+                    <option value="3" {{ old('months') == 3 ? 'selected' : '' }}>3 Months (₱9,000)</option>
+                    <option value="4" {{ old('months') == 4 ? 'selected' : '' }}>4 Months (₱12,000)</option>
+                    <option value="5" {{ old('months') == 5 ? 'selected' : '' }}>5 Months (₱15,000)</option>
+                    <option value="6" {{ old('months') == 6 ? 'selected' : '' }}>6 Months (₱18,000)</option>
+                    <option value="12" {{ old('months') == 12 ? 'selected' : '' }}>12 Months (₱36,000)</option>
+                </select>
+                @error('months')<p class="text-red-600 text-xs mt-1">{{ $message }}</p>@enderror
             </div>
 
-            {{-- Due Date --}}
+            {{-- Amount (Hidden) --}}
+            <input type="hidden" name="amount" id="amount" value="{{ old('amount') }}">
             <div>
-                <label for="due_date" class="block text-[11px] font-semibold uppercase tracking-[0.12em] text-gray-500 mb-2">
-                    Due Date <span class="text-red-500">*</span>
+                <label class="block text-[11px] font-semibold uppercase tracking-[0.12em] text-gray-500 mb-2">
+                    Payment Amount (₱)
                 </label>
-                <input type="date" name="due_date" id="due_date" required
-                       value="{{ old('due_date') }}"
-                       class="w-full px-4 py-3 border border-[#e5e7eb] rounded-lg text-[14px] focus:border-[#7c3a1e] focus:outline-none">
-                @error('due_date')<p class="text-red-600 text-xs mt-1">{{ $message }}</p>@enderror
+                <div class="px-4 py-3 border border-[#e5e7eb] rounded-lg text-[14px] bg-[#faf7f4] text-gray-600">
+                    ₱<span id="amountDisplay">0.00</span>
+                </div>
+            </div>
+
+            {{-- Due Date (Auto-calculated) --}}
+            <input type="hidden" name="due_date" id="due_date" value="{{ old('due_date') }}">
+            <div>
+                <label class="block text-[11px] font-semibold uppercase tracking-[0.12em] text-gray-500 mb-2">
+                    Due Date (Auto-calculated)
+                </label>
+                <div class="px-4 py-3 border border-[#e5e7eb] rounded-lg text-[14px] bg-[#faf7f4] text-gray-600">
+                    <span id="dueDateDisplay">Select months above</span>
+                </div>
             </div>
 
             {{-- Notes --}}
@@ -116,5 +135,52 @@
         </form>
     </div>
 </div>
+
+<script>
+const MONTHS_PRICE = 3000;
+
+function updatePaymentAmount() {
+    const monthsSelect = document.getElementById('months');
+    const months = parseInt(monthsSelect.value) || 0;
+    const amount = months * MONTHS_PRICE;
+    
+    // Update hidden amount field
+    document.getElementById('amount').value = amount;
+    
+    // Update display
+    document.getElementById('amountDisplay').textContent = new Intl.NumberFormat('en-PH', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(amount);
+    
+    // Calculate due date (months from today)
+    if (months > 0) {
+        const today = new Date();
+        const dueDate = new Date(today.getFullYear(), today.getMonth() + months, today.getDate());
+        const year = dueDate.getFullYear();
+        const month = String(dueDate.getMonth() + 1).padStart(2, '0');
+        const day = String(dueDate.getDate()).padStart(2, '0');
+        const dateString = `${year}-${month}-${day}`;
+        
+        document.getElementById('due_date').value = dateString;
+        document.getElementById('dueDateDisplay').textContent = dueDate.toLocaleDateString('en-PH', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+    } else {
+        document.getElementById('due_date').value = '';
+        document.getElementById('dueDateDisplay').textContent = 'Select months above';
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const monthsSelect = document.getElementById('months');
+    if (monthsSelect.value) {
+        updatePaymentAmount();
+    }
+});
+</script>
 
 @endsection

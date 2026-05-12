@@ -88,24 +88,26 @@ class FinanceController extends Controller
     {
         $request->validate([
             'tenant_id' => 'required|exists:tenants,id',
-            'amount' => 'required|numeric|min:0',
-            'due_date' => 'required|date',
+            'months' => 'required|integer|min:1|max:12',
             'notes' => 'nullable|string',
         ]);
 
         $tenant = Tenant::findOrFail($request->tenant_id);
-        $status = now()->greaterThan(Carbon::parse($request->due_date)) ? 'overdue' : 'pending';
+        $months = (int)$request->months;
+        $amount = $months * 3000;
+        $dueDate = now()->addMonths($months);
+        $status = 'pending';
 
         $payment = Payment::create([
             'tenant_id' => $tenant->id,
-            'amount' => $request->amount,
-            'due_date' => $request->due_date,
+            'amount' => $amount,
+            'due_date' => $dueDate,
             'status' => $status,
             'notes' => $request->notes,
         ]);
 
         $tenant->update([
-            'payment_status' => $status === 'overdue' ? 'Overdue' : 'Pending',
+            'payment_status' => 'Pending',
         ]);
 
         return redirect()->route('finances')->with('success', 'Payment record created successfully.');

@@ -503,7 +503,7 @@ function assignTechnician(ticketId) {
 
 // Resolve issue function
 function resolveIssue(ticketId) {
-    if (!confirm('Delete this issue from the table?')) {
+    if (!confirm('Mark this issue as resolved and remove from tracking?')) {
         return;
     }
 
@@ -532,13 +532,18 @@ function resolveIssue(ticketId) {
     })
     .then(response => response.json())
     .then(data => {
-        if (!data.success) {
-            alert('Issue deleted from the table, but backend update failed: ' + data.message);
+        if (data.success) {
+            // Reload page to clear calendar and update utility tracking
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } else {
+            alert('Resolved but issue updating: ' + data.message);
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Issue deleted from the table, but backend update failed.');
+        alert('Resolved but backend update failed.');
     });
 }
 </script>

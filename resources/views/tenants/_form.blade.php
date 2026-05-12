@@ -78,7 +78,7 @@
             <label class="block text-[11px] font-semibold uppercase tracking-[0.12em] text-gray-500 mb-2">Lease Status</label>
             <select name="status" class="w-full rounded-lg border border-[#e5e7eb] px-4 py-2 text-sm text-gray-700 focus:border-[#7c3a1e] outline-none">
                 @foreach (['Active', 'Renewal Sent', 'Pending', 'Overdue'] as $statusOption)
-                    <option value="{{ $statusOption }}" {{ old('status', isset($tenant) ? $tenant->status : 'Active') === $statusOption ? 'selected' : '' }}>{{ $statusOption }}</option>
+                    <option value="{{ $statusOption }}" {{ old('status', isset($tenant) ? $tenant->status : 'Pending') === $statusOption ? 'selected' : '' }}>{{ $statusOption }}</option>
                 @endforeach
             </select>
             @error('status')<p class="text-red-600 text-xs mt-1">{{ $message }}</p>@enderror
@@ -87,7 +87,7 @@
             <label class="block text-[11px] font-semibold uppercase tracking-[0.12em] text-gray-500 mb-2">Payment Status</label>
             <select name="payment_status" class="w-full rounded-lg border border-[#e5e7eb] px-4 py-2 text-sm text-gray-700 focus:border-[#7c3a1e] outline-none">
                 @foreach (['Paid', 'Pending', 'Overdue'] as $paymentOption)
-                    <option value="{{ $paymentOption }}" {{ old('payment_status', isset($tenant) ? $tenant->payment_status : 'Paid') === $paymentOption ? 'selected' : '' }}>{{ $paymentOption }}</option>
+                    <option value="{{ $paymentOption }}" {{ old('payment_status', isset($tenant) ? $tenant->payment_status : 'Pending') === $paymentOption ? 'selected' : '' }}>{{ $paymentOption }}</option>
                 @endforeach
             </select>
             @error('payment_status')<p class="text-red-600 text-xs mt-1">{{ $message }}</p>@enderror

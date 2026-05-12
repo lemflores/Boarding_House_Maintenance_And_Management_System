@@ -4,20 +4,36 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Payment;
+use App\Models\Tenant;
+use App\Http\Controllers\MaintenanceController;
 
 class DashboardController extends Controller
 {
     public function index()
     {
+        $totalUnits = 36;
+        $activeRent = Tenant::where('status', 'Active')->count();
+        $occupiedUnits = Tenant::where('status', 'Active')->count();
+        $occupancyRate = $totalUnits ? round($occupiedUnits / $totalUnits * 100, 1) : 0;
+        $totalRevenue = Payment::where('status', 'paid')->sum('amount');
+
+        $tickets = MaintenanceController::getTickets();
+        $pendingRequests = count(array_filter($tickets, fn($t) => $t['status'] === 'NEW'));
+        $inProgressRequests = count(array_filter($tickets, fn($t) => $t['status'] === 'IN PROGRESS'));
+        $resolvedRequests = count(array_filter($tickets, fn($t) => $t['status'] === 'RESOLVED'));
+
+        $newApplicants = Tenant::where('status', 'Pending')->count();
+
         $data = [
-            'totalRevenue'      => 245800.00,
-            'occupiedUnits'     => 36,
-            'totalUnits'        => 48,
-            'occupancyRate'     => 75.1,
-            'pendingRequests'   => 2,
-            'inProgressRequests'=> 2,
-            'resolvedRequests'  => 2,
-            'newApplicants'     => 4,
+            'totalRevenue'      => $totalRevenue,
+            'occupiedUnits'     => $occupiedUnits,
+            'totalUnits'        => $totalUnits,
+            'occupancyRate'     => $occupancyRate,
+            'activeRent'        => $activeRent,
+            'pendingRequests'   => $pendingRequests,
+            'inProgressRequests'=> $inProgressRequests,
+            'resolvedRequests'  => $resolvedRequests,
+            'newApplicants'     => $newApplicants,
 
             'maintenanceItems' => [
                 [
