@@ -30,7 +30,47 @@ class MaintenanceController extends Controller
 
     private function getDefaultTickets()
     {
-        return [];
+        return [
+            [
+                'id' => 1,
+                'ref' => '#MT-901',
+                'subject' => 'Air conditioning leak in Room 103',
+                'location' => 'Unit 103',
+                'assigned' => false,
+                'assignedName' => '',
+                'assignedInitials' => '',
+                'priority' => 'URGENT',
+                'status' => 'NEW',
+                'reported' => Carbon::now()->subMinutes(45)->format('M d, Y'),
+                'date' => Carbon::now()->format('Y-m-d'),
+            ],
+            [
+                'id' => 2,
+                'ref' => '#MT-902',
+                'subject' => 'Kitchen tap plumbing issue',
+                'location' => 'Unit 219',
+                'assigned' => true,
+                'assignedName' => 'Carlo',
+                'assignedInitials' => 'C',
+                'priority' => 'NORMAL',
+                'status' => 'IN PROGRESS',
+                'reported' => Carbon::now()->subHours(3)->format('M d, Y'),
+                'date' => Carbon::now()->format('Y-m-d'),
+            ],
+            [
+                'id' => 3,
+                'ref' => '#MT-903',
+                'subject' => 'Hallway light bulb replacement',
+                'location' => '2nd Floor Hallway',
+                'assigned' => true,
+                'assignedName' => 'Bella',
+                'assignedInitials' => 'B',
+                'priority' => 'MEDIUM',
+                'status' => 'RESOLVED',
+                'reported' => Carbon::now()->subDays(1)->format('M d, Y'),
+                'date' => Carbon::now()->subDays(1)->format('Y-m-d'),
+            ],
+        ];
     }
 
     public function index(Request $request)

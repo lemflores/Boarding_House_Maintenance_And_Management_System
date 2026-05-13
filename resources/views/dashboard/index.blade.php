@@ -27,7 +27,7 @@
 </div>
 
 {{-- ── STAT CARDS ───────────────────────────────────────────────── --}}
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 mb-6">
 
     {{-- Revenue --}}
     <div class="bg-white rounded-xl border border-[#ede7df] p-5">
@@ -76,16 +76,6 @@
         <p class="text-[11px] text-gray-400 mt-1">{{ $inProgressRequests }} In Progress &nbsp;·&nbsp; {{ $resolvedRequests }} Resolved</p>
         <a href="{{ route('maintenance') }}" class="inline-flex items-center gap-1 text-[11px] text-[#7c3a1e] hover:text-[#5c2910] font-medium mt-3 transition-colors">
             View Requests
-        </a>
-    </div>
-
-    {{-- Onboarding --}}
-    <div class="bg-[#1e3a1e] rounded-xl p-5 text-white">
-        <p class="text-[9px] font-semibold uppercase tracking-[0.12em] text-green-300/70 mb-2">Onboarding</p>
-        <p class="font-[Playfair_Display] text-[22px] font-bold leading-tight">{{ $newApplicants }} New<br>Applicants</p>
-        <p class="text-[11px] text-white/50 mt-1 mb-3">Awaiting approval or application review</p>
-        <a href="{{ route('tenants.create') }}" class="inline-flex items-center gap-1 bg-[#6fcf4a] hover:bg-[#5ab83a] text-[#1a3310] text-[11px] font-bold px-4 py-1.5 rounded-full transition-colors">
-            Add New Applicant
         </a>
     </div>
 </div>

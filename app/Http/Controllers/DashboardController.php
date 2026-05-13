@@ -35,34 +35,48 @@ class DashboardController extends Controller
             'resolvedRequests'  => $resolvedRequests,
             'newApplicants'     => $newApplicants,
 
-            'maintenanceItems' => [
-                [
-                    'icon'     => '❄️',
-                    'iconBg'   => 'bg-red-100',
-                    'title'    => 'Room 103 – Air Conditioning Leak',
-                    'priority' => 'high',
-                    'meta'     => 'Reported by Resident · 45 mins ago',
-                ],
-                [
-                    'icon'     => '🚿',
-                    'iconBg'   => 'bg-gray-100',
-                    'title'    => 'Kitchen Tap Plumbing',
-                    'priority' => 'normal',
-                    'meta'     => 'Unit 219',
-                ],
-                [
-                    'icon'     => '💡',
-                    'iconBg'   => 'bg-yellow-50',
-                    'title'    => 'Light Bulb Replacement',
-                    'priority' => 'normal',
-                    'meta'     => '2nd Floor Hallway',
-                ],
-            ],
+            'maintenanceItems' => $this->buildMaintenanceItems($tickets),
 
             'activityLog' => $this->buildActivityLog(),
         ];
 
         return view('dashboard.index', $data);
+    }
+
+    private function buildMaintenanceItems(array $tickets): array
+    {
+        $activeTickets = array_filter($tickets, fn($ticket) => $ticket['status'] !== 'RESOLVED');
+
+        if (empty($activeTickets)) {
+            return [
+                [
+                    'iconBg' => 'bg-green-100',
+                    'title' => 'No active maintenance issues',
+                    'priority' => 'All clear',
+                    'meta' => 'Visit maintenance to create a report',
+                ],
+            ];
+        }
+
+        usort($activeTickets, function ($a, $b) {
+            $priorityOrder = ['URGENT' => 1, 'NORMAL' => 2, 'MEDIUM' => 3];
+            return ($priorityOrder[$a['priority']] ?? 99) <=> ($priorityOrder[$b['priority']] ?? 99);
+        });
+
+        return array_map(function ($ticket) {
+            $priorityLabel = match ($ticket['priority']) {
+                'URGENT' => 'Urgent',
+                'MEDIUM' => 'Medium',
+                default => 'Normal',
+            };
+
+            return [
+                'iconBg' => $ticket['priority'] === 'URGENT' ? 'bg-red-100' : ($ticket['priority'] === 'MEDIUM' ? 'bg-yellow-50' : 'bg-gray-100'),
+                'title' => $ticket['subject'],
+                'priority' => $priorityLabel,
+                'meta' => $ticket['location'] . ' · ' . $ticket['reported'],
+            ];
+        }, array_slice($activeTickets, 0, 3));
     }
 
     private function buildActivityLog(): array
@@ -114,3 +128,4 @@ class DashboardController extends Controller
         return $activityLog;
     }
 }
+

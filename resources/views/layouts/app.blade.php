@@ -76,19 +76,21 @@
                 </svg>
             </button>
         </div>
-        <div class="relative flex items-center gap-3">
-            <button id="topbarNotificationButton" type="button" onclick="toggleTopbarDropdown('notifications')" class="w-8 h-8 rounded-full bg-[#f5f0eb] flex items-center justify-center text-gray-500 hover:bg-[#ede7df] transition-colors text-sm" aria-haspopup="true" aria-expanded="false" aria-controls="topbarNotificationDropdown">
-                <span class="sr-only">Open notifications</span>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+        <div class="flex items-center gap-3">
+            <div class="relative">
+                <button id="topbarNotificationButton" type="button" onclick="toggleTopbarDropdown('notifications')" class="w-8 h-8 rounded-full bg-[#f5f0eb] flex items-center justify-center text-gray-500 hover:bg-[#ede7df] transition-colors text-sm" aria-haspopup="true" aria-expanded="false" aria-controls="topbarNotificationDropdown">
+                    <span class="sr-only">Open notifications</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
   <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0M3.124 7.5A8.969 8.969 0 0 1 5.292 3m13.416 0a8.969 8.969 0 0 1 2.168 4.5" />
 </svg>
-            </button>
+                </button>
 
-            <div id="topbarNotificationDropdown" class="absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-lg z-50 hidden text-sm">
-                <div class="p-4 space-y-2">
-                    <p class="text-sm font-semibold text-[#2d1a0e]">Notifications</p>
-                    <p class="text-xs text-gray-500">You have no new notifications.</p>
-                    <a href="{{ route('dashboard') }}" class="block text-sm text-[#7c3a1e] hover:underline">View all notifications</a>
+                <div id="topbarNotificationDropdown" class="absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-lg z-50 hidden text-sm">
+                    <div class="p-4 space-y-2">
+                        <p class="text-sm font-semibold text-[#2d1a0e]">Notifications</p>
+                        <p class="text-xs text-gray-500">You have no new notifications.</p>
+                        <a href="{{ route('dashboard') }}" class="block text-sm text-[#7c3a1e] hover:underline">View all notifications</a>
+                    </div>
                 </div>
             </div>
 
