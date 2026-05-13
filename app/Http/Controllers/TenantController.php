@@ -36,7 +36,8 @@ class TenantController extends Controller
         $totalResidents = Tenant::sum('occupants');
         $activeLeases = Tenant::where('status', 'Active')->count();
         $expiringLeases = Tenant::whereBetween('lease_end', [now(), now()->addDays(30)])->count();
-        $occupancyRate = Tenant::count() ? round($activeLeases / Tenant::count() * 100, 1) : 0;
+        $totalUnits = 36; // 3 floors × 12 units per floor
+        $occupancyRate = round((Tenant::count() / $totalUnits) * 100, 1);
 
         return view('tenants.index', [
             'tenants'        => $tenants,
@@ -99,7 +100,7 @@ class TenantController extends Controller
             'unit' => 'required|string|max:100',
             'occupants' => 'required|integer|min:1|max:20',
             'email' => 'nullable|email|max:255',
-            'phone' => 'required|string|max:30',
+            'phone' => 'required|regex:/^[0-9\s\-\+\(\)]+$/|max:30',
             'lease_start' => 'required|date',
             'lease_end' => 'required|date|after_or_equal:lease_start',
             'status' => ['required', Rule::in(['Active', 'Renewal Sent', 'Pending', 'Overdue'])],

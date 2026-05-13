@@ -49,9 +49,12 @@
             <label class="block text-[11px] font-semibold uppercase tracking-[0.12em] text-gray-500 mb-2">
                 Phone <span class="text-red-500">*</span>
             </label>
-            <input type="text" name="phone" required value="{{ old('phone', isset($tenant) ? $tenant->phone : '') }}"
+            <input type="tel" name="phone" required value="{{ old('phone', isset($tenant) ? $tenant->phone : '') }}"
                    class="w-full rounded-lg border border-[#e5e7eb] px-4 py-2 text-sm text-gray-700 focus:border-[#7c3a1e] outline-none"
-                   placeholder="09XX XXX XXXX">
+                   placeholder="09XX XXX XXXX"
+                   inputmode="numeric"
+                   onkeypress="return /[0-9\s\-\+\(\)]/i.test(event.key)"
+                   oninput="this.value = this.value.replace(/[^0-9\s\-\+\(\)]/g, '')">
             @error('phone')<p class="text-red-600 text-xs mt-1">{{ $message }}</p>@enderror
         </div>
         <div class="grid grid-cols-2 gap-4">

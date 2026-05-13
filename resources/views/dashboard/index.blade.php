@@ -26,6 +26,12 @@
     </div>
 </div>
 
+@if (session('success') || session('activity_cleared'))
+    <div class="mb-5 rounded-xl border border-green-200 bg-green-50 p-4 text-green-700">
+        {{ session('success') ?: session('activity_cleared') }}
+    </div>
+@endif
+
 {{-- ── STAT CARDS ───────────────────────────────────────────────── --}}
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 mb-6">
 
@@ -83,8 +89,49 @@
 {{-- ── BOTTOM ROW ───────────────────────────────────────────────── --}}
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-    {{-- Priority Maintenance --}}
+    {{-- Tenant Notifications --}}
     <div class="col-span-1 lg:col-span-2">
+        @if($expiredTenants->count() > 0 || $almostExpiredTenants->count() > 0)
+        <div class="mb-6">
+            <h3 class="text-[15px] font-bold text-[#2d1a0e] mb-4">Tenant Lease Alerts</h3>
+            <div class="space-y-3">
+                {{-- Expired Tenants --}}
+                @foreach ($expiredTenants as $tenant)
+                <div class="bg-red-50 rounded-xl border border-red-200 p-4 flex items-start gap-3.5">
+                    <div class="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center text-red-600 flex-shrink-0 font-bold text-sm">
+                        {{ substr($tenant->name, 0, 1) }}{{ substr($tenant->name, strpos($tenant->name, ' ') + 1, 1) ?? '' }}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="text-[13px] font-semibold text-red-800">{{ $tenant->name }} - {{ $tenant->unit }}</span>
+                            <span class="bg-red-200 text-red-800 text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">EXPIRED</span>
+                        </div>
+                        <p class="text-[11px] text-red-600 mt-0.5">Lease ended on {{ $tenant->lease_end->format('M d, Y') }}</p>
+                    </div>
+                </div>
+                @endforeach
+
+                {{-- Almost Expired Tenants --}}
+                @foreach ($almostExpiredTenants as $tenant)
+                <div class="bg-orange-50 rounded-xl border border-orange-200 p-4 flex items-start gap-3.5">
+                    <div class="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center text-orange-600 flex-shrink-0 font-bold text-sm">
+                        {{ substr($tenant->name, 0, 1) }}{{ substr($tenant->name, strpos($tenant->name, ' ') + 1, 1) ?? '' }}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="text-[13px] font-semibold text-orange-800">{{ $tenant->name }} - {{ $tenant->unit }}</span>
+                            <span class="bg-orange-200 text-orange-800 text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">EXPIRING SOON</span>
+                        </div>
+                        <p class="text-[11px] text-orange-600 mt-0.5">Lease expires in {{ now()->diffInDays($tenant->lease_end) }} days ({{ $tenant->lease_end->format('M d, Y') }})</p>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
+
+    {{-- Priority Maintenance --}}
+    <div>
         <h3 class="text-[15px] font-bold text-[#2d1a0e] mb-4">Priority Maintenance</h3>
         <div class="space-y-3">
             @foreach ($maintenanceItems as $item)
@@ -108,6 +155,7 @@
             @endforeach
         </div>
     </div>
+    </div>
 
     {{-- Activity Log --}}
     <div class="bg-white rounded-xl border border-[#ede7df] p-5">
@@ -125,9 +173,20 @@
             <div class="text-[12px] text-gray-500">No recent activity available.</div>
             @endforelse
         </div>
-        <a href="{{ route('finances') }}" class="inline-block text-[12px] text-[#7c3a1e] hover:text-[#5c2910] font-semibold mt-5 transition-colors">
-            View All Activity
-        </a>
+        <div class="flex items-center justify-between mt-5">
+            <a href="{{ route('finances') }}" class="inline-block text-[12px] text-[#7c3a1e] hover:text-[#5c2910] font-semibold transition-colors">
+                View All Activity
+            </a>
+            <form method="POST" action="{{ route('dashboard.clear-activity') }}" class="inline" onsubmit="return confirm('Are you sure you want to clear the activity log?');">
+                @csrf
+                <button type="submit" class="inline-flex items-center gap-1 text-[12px] text-gray-400 hover:text-red-500 font-medium transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 2.98a1.125 1.125 0 00-2.228-.015L9.591 5.6M5.106 5.4A2.625 2.625 0 103.675 3.98m0 13.621a8.002 8.002 0 01-5.022-2.478A8.002 8.002 0 015.106 19.02M19.5 9.5c0 .828-.672 1.5-1.5 1.5s-1.5-.672-1.5-1.5.672-1.5 1.5-1.5 1.5.672 1.5 1.5z" />
+                    </svg>
+                    Clear Log
+                </button>
+            </form>
+        </div>
     </div>
 </div>
 

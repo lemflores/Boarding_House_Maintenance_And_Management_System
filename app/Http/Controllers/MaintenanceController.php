@@ -80,13 +80,15 @@ class MaintenanceController extends Controller
 
         $tickets = $this->getTicketsStorage();
 
-        // Calculate summary statistics
+        // Calculate summary statistics (all tickets)
         $openTickets = count(array_filter($tickets, fn($t) => $t['status'] === 'NEW'));
         $inProgressTickets = count(array_filter($tickets, fn($t) => $t['status'] === 'IN PROGRESS'));
         $resolvedTickets = count(array_filter($tickets, fn($t) => $t['status'] === 'RESOLVED'));
         $unassignedTickets = count(array_filter($tickets, fn($t) => !$t['assigned']));
 
-        // Get calendar data
+        // Get calendar data - exclude RESOLVED tickets
+        $activeTickets = array_filter($tickets, fn($t) => $t['status'] !== 'RESOLVED');
+        
         $firstDay = new DateTime("$year-$month-01");
         $daysInMonth = $firstDay->format('t');
         $startingDayOfWeek = $firstDay->format('N'); // 1-7 (Monday-Sunday)
@@ -99,7 +101,7 @@ class MaintenanceController extends Controller
         // Add days of month
         for ($day = 1; $day <= $daysInMonth; $day++) {
             $date = sprintf('%04d-%02d-%02d', $year, $month, $day);
-            $dayTickets = array_filter($tickets, fn($t) => $t['date'] === $date);
+            $dayTickets = array_filter($activeTickets, fn($t) => $t['date'] === $date);
             $calendarDays[] = [
                 'day' => $day,
                 'date' => $date,

@@ -25,6 +25,9 @@ class UtilityController extends Controller
             ->all();
 
         $maintenanceRooms = collect(MaintenanceController::getTickets())
+            ->filter(function ($ticket) {
+                return $ticket['status'] !== 'RESOLVED';
+            })
             ->mapWithKeys(function ($ticket) {
                 $roomNumber = $this->normalizeRoomNumber($ticket['location']);
                 return $roomNumber ? [$roomNumber => $ticket] : [];

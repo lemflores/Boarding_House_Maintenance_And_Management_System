@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Payment;
 use App\Models\Tenant;
 use App\Http\Controllers\MaintenanceController;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
@@ -13,7 +14,7 @@ class DashboardController extends Controller
     {
         $totalUnits = 36;
         $activeRent = Tenant::where('status', 'Active')->count();
-        $occupiedUnits = Tenant::where('status', 'Active')->count();
+        $occupiedUnits = Tenant::count();
         $occupancyRate = $totalUnits ? round($occupiedUnits / $totalUnits * 100, 1) : 0;
         $totalRevenue = Payment::where('status', 'paid')->sum('amount');
 
@@ -23,6 +24,11 @@ class DashboardController extends Controller
         $resolvedRequests = count(array_filter($tickets, fn($t) => $t['status'] === 'RESOLVED'));
 
         $newApplicants = Tenant::where('status', 'Pending')->count();
+
+        // Get expired and almost expired tenants
+        $now = Carbon::today();
+        $expiredTenants = Tenant::where('lease_end', '<', $now)->get();
+        $almostExpiredTenants = Tenant::whereBetween('lease_end', [$now, $now->copy()->addDays(7)])->get();
 
         $data = [
             'totalRevenue'      => $totalRevenue,
@@ -36,11 +42,19 @@ class DashboardController extends Controller
             'newApplicants'     => $newApplicants,
 
             'maintenanceItems' => $this->buildMaintenanceItems($tickets),
-
             'activityLog' => $this->buildActivityLog(),
+            'expiredTenants' => $expiredTenants,
+            'almostExpiredTenants' => $almostExpiredTenants,
         ];
 
         return view('dashboard.index', $data);
+    }
+
+    public function clearActivityLog(Request $request)
+    {
+        // Set a session flag to indicate activity log should be cleared
+        session(['activity_log_cleared' => true]);
+        return redirect()->route('dashboard')->with('activity_cleared', 'Activity log has been cleared successfully.');
     }
 
     private function buildMaintenanceItems(array $tickets): array
@@ -81,6 +95,17 @@ class DashboardController extends Controller
 
     private function buildActivityLog(): array
     {
+        // Check if activity log has been cleared
+        if (session('activity_log_cleared', false)) {
+            return [
+                [
+                    'dotColor' => 'bg-gray-300',
+                    'title'    => 'Activity log cleared',
+                    'desc'     => 'Recent activities will appear here as they happen.',
+                ],
+            ];
+        }
+
         $payments = Payment::with('tenant')
             ->orderByDesc('updated_at')
             ->limit(3)

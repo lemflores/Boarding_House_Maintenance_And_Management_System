@@ -26,6 +26,7 @@ Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 |--------------------------------------------------------------------------
 */
 Route::get('/dashboard',    [DashboardController::class, 'index'])->name('dashboard');
+Route::post('/dashboard/clear-activity', [DashboardController::class, 'clearActivityLog'])->name('dashboard.clear-activity');
 Route::get('/utility',      [UtilityController::class,   'index'])->name('utility');
 Route::get('/tenants', [TenantController::class, 'index'])->name('tenants');
 Route::get('/tenants/create', [TenantController::class, 'create'])->name('tenants.create');
