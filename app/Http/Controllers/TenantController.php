@@ -29,9 +29,10 @@ class TenantController extends Controller
             });
         }
 
-        $tenantModels = $query->orderBy('lease_end', 'asc')->get();
+        $tenantModels = $query->orderBy('lease_end', 'asc')->paginate(10);
 
-        $tenants = $tenantModels->map(fn (Tenant $tenant) => $this->formatTenant($tenant))->all();
+        $tenants = $tenantModels->getCollection()->map(fn (Tenant $tenant) => $this->formatTenant($tenant))->all();
+        $tenantModels->setCollection(collect($tenants));
 
         $totalResidents = Tenant::sum('occupants');
         $activeLeases = Tenant::where('status', 'Active')->count();
@@ -46,6 +47,7 @@ class TenantController extends Controller
             'expiringLeases' => $expiringLeases,
             'occupancyRate'  => $occupancyRate,
             'currentFilter'  => $filter,
+            'tenantsPaginated' => $tenantModels,
         ]);
     }
 

@@ -158,14 +158,9 @@
 
     {{-- Pagination --}}
     <div class="flex items-center justify-between px-6 py-4 border-t border-[#ede7df]">
-        <p class="text-[12px] text-gray-400">Showing {{ count($transactions) }} transactions</p>
-        <div class="flex items-center gap-1.5">
-            <button class="w-7 h-7 rounded-lg border border-[#e5e7eb] text-gray-400 text-[13px] hover:border-[#7c3a1e] transition-colors flex items-center justify-center">‹</button>
-            <button class="w-7 h-7 rounded-lg bg-[#7c3a1e] text-white text-[12px] font-bold">1</button>
-            <button class="w-7 h-7 rounded-lg border border-[#e5e7eb] text-gray-500 text-[12px] hover:border-[#7c3a1e] transition-colors">2</button>
-            <span class="text-gray-300 text-[12px] px-0.5">…</span>
-            <button class="w-7 h-7 rounded-lg border border-[#e5e7eb] text-gray-500 text-[12px] hover:border-[#7c3a1e] transition-colors">6</button>
-            <button class="w-7 h-7 rounded-lg border border-[#e5e7eb] text-gray-400 text-[13px] hover:border-[#7c3a1e] transition-colors flex items-center justify-center">›</button>
+        <p class="text-[12px] text-gray-400">Showing {{ $transactions->firstItem() ?? 0 }} to {{ $transactions->lastItem() ?? 0 }} of {{ $transactions->total() }} transactions</p>
+        <div class="flex items-center gap-1">
+            {{ $transactions->appends(request()->query())->links() }}
         </div>
     </div>
 </div>

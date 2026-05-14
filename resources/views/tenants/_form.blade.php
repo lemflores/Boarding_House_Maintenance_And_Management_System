@@ -13,16 +13,16 @@
             <label class="block text-[11px] font-semibold uppercase tracking-[0.12em] text-gray-500 mb-2">
                 Unit <span class="text-red-500">*</span>
             </label>
-            <input type="text" name="unit" required value="{{ old('unit', isset($tenant) ? $tenant->unit : '') }}"
-                   list="availableUnits" class="w-full rounded-lg border border-[#e5e7eb] px-4 py-2 text-sm text-gray-700 focus:border-[#7c3a1e] outline-none"
-                   placeholder="Search and select unit...">
-            <datalist id="availableUnits">
+            <select name="unit" required class="w-full rounded-lg border border-[#e5e7eb] px-4 py-2 text-sm text-gray-700 focus:border-[#7c3a1e] outline-none">
+                <option value="">Select a unit...</option>
                 @if(isset($availableUnits))
                     @foreach($availableUnits as $unitNumber)
-                        <option value="{{ $unitNumber }}">
+                        <option value="{{ $unitNumber }}" {{ old('unit', isset($tenant) ? $tenant->unit : '') === $unitNumber ? 'selected' : '' }}>
+                            Unit {{ $unitNumber }}
+                        </option>
                     @endforeach
                 @endif
-            </datalist>
+            </select>
             @error('unit')<p class="text-red-600 text-xs mt-1">{{ $message }}</p>@enderror
         </div>
     </div>

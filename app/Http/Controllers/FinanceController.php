@@ -41,7 +41,9 @@ class FinanceController extends Controller
             });
         }
 
-        $transactions = $query->get()->map(function ($payment) {
+        $transactions = $query->paginate(10);
+
+        $mappedTransactions = $transactions->getCollection()->map(function ($payment) {
             return [
                 'id' => $payment->id,
                 'name' => $payment->tenant->name,
@@ -54,6 +56,7 @@ class FinanceController extends Controller
                 'status' => strtoupper($payment->status),
             ];
         });
+        $transactions->setCollection(collect($mappedTransactions));
 
         // Calculate stats
         $totalCollections = Payment::where('status', 'paid')->sum('amount');

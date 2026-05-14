@@ -75,7 +75,7 @@ Add New Tenant
             </tr>
         </thead>
         <tbody>
-            @forelse ($tenants as $tenant)
+            @forelse ($tenantsPaginated as $tenant)
             <tr class="border-t border-[#f0ebe5] hover:bg-[#faf7f4] transition-colors">
                 <td class="px-6 py-4">
                     <div class="flex items-center gap-3">
@@ -141,19 +141,10 @@ Add New Tenant
 
     {{-- Pagination --}}
     <div class="flex items-center justify-between px-6 py-4 border-t border-[#ede7df]">
-        <button class="inline-flex items-center gap-1 border border-[#e5e7eb] text-gray-500 text-[12px] font-medium px-4 py-1.5 rounded-lg hover:border-[#7c3a1e] hover:text-[#7c3a1e] transition-colors bg-white">
-            ← Previous
-        </button>
-        <div class="flex items-center gap-1.5">
-            <button class="w-8 h-8 rounded-lg bg-[#7c3a1e] text-white text-[12px] font-bold">1</button>
-            <button class="w-8 h-8 rounded-lg border border-[#e5e7eb] text-gray-500 text-[12px] hover:border-[#7c3a1e] transition-colors">2</button>
-            <button class="w-8 h-8 rounded-lg border border-[#e5e7eb] text-gray-500 text-[12px] hover:border-[#7c3a1e] transition-colors">3</button>
-            <span class="text-gray-300 text-[12px] px-1">…</span>
-            <button class="w-8 h-8 rounded-lg border border-[#e5e7eb] text-gray-500 text-[12px] hover:border-[#7c3a1e] transition-colors">12</button>
+        <p class="text-[12px] text-gray-400">Showing {{ $tenantsPaginated->firstItem() ?? 0 }} to {{ $tenantsPaginated->lastItem() ?? 0 }} of {{ $tenantsPaginated->total() }} tenants</p>
+        <div class="flex items-center gap-1">
+            {{ $tenantsPaginated->appends(request()->query())->links() }}
         </div>
-        <button class="inline-flex items-center gap-1 border border-[#e5e7eb] text-gray-500 text-[12px] font-medium px-4 py-1.5 rounded-lg hover:border-[#7c3a1e] hover:text-[#7c3a1e] transition-colors bg-white">
-            Next →
-        </button>
     </div>
 </div>
 
