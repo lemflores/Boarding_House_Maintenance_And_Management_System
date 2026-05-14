@@ -225,10 +225,10 @@
                 <input type="text" name="subject" required class="w-full px-3 py-2 border border-[#ede7df] rounded-lg text-[13px] focus:outline-none focus:border-[#7c3a1e]" placeholder="e.g., Water leak in bathroom">
             </div>
 
-            <div>
+            <div class="relative">
                 <label class="block text-[12px] font-semibold text-[#2d1a0e] mb-2">Location/Unit *</label>
                 <input type="hidden" name="location" id="maintenance-location-input">
-                <div class="relative">
+                <div>
                     <input type="text" id="maintenance-location-search" required class="w-full px-3 py-2 border border-[#ede7df] rounded-lg text-[13px] focus:outline-none focus:border-[#7c3a1e]" placeholder="Search and select unit..." autocomplete="off">
                     <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
                         <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -236,7 +236,7 @@
                         </svg>
                     </div>
                 </div>
-                <div id="maintenance-location-dropdown" class="absolute z-10 w-full bg-white border border-[#ede7df] rounded-lg shadow-lg mt-1 max-h-48 overflow-y-auto hidden">
+                <div id="maintenance-location-dropdown" class="absolute left-0 right-0 z-10 bg-white border border-[#ede7df] rounded-lg shadow-lg mt-1 max-h-48 overflow-y-auto hidden">
                     @foreach ($units as $unit)
                         <div class="maintenance-unit-option px-4 py-2 hover:bg-[#faf7f4] cursor-pointer text-sm" data-value="Unit {{ $unit['number'] }}">Unit {{ $unit['number'] }}</div>
                     @endforeach

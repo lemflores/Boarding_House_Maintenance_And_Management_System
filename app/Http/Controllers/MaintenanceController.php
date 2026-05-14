@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MaintenanceReport;
 use App\Models\Tenant;
 use Carbon\Carbon;
 use DateTime;
@@ -9,68 +10,9 @@ use Illuminate\Http\Request;
 
 class MaintenanceController extends Controller
 {
-    // Static storage for demonstration (in production, use database)
-    private static $ticketsStorage = null;
-
-    public static function getTickets()
+    public static function getTickets(): array
     {
-        return session()->get('maintenance_tickets', (new self)->getDefaultTickets());
-    }
-
-    private function getTicketsStorage()
-    {
-        return session()->get('maintenance_tickets', $this->getDefaultTickets());
-    }
-
-    private function saveTickets(array $tickets): void
-    {
-        session()->put('maintenance_tickets', $tickets);
-        self::$ticketsStorage = $tickets;
-    }
-
-    private function getDefaultTickets()
-    {
-        return [
-            [
-                'id' => 1,
-                'ref' => '#MT-901',
-                'subject' => 'Air conditioning leak in Room 103',
-                'location' => 'Unit 103',
-                'assigned' => false,
-                'assignedName' => '',
-                'assignedInitials' => '',
-                'priority' => 'URGENT',
-                'status' => 'NEW',
-                'reported' => Carbon::now()->subMinutes(45)->format('M d, Y'),
-                'date' => Carbon::now()->format('Y-m-d'),
-            ],
-            [
-                'id' => 2,
-                'ref' => '#MT-902',
-                'subject' => 'Kitchen tap plumbing issue',
-                'location' => 'Unit 219',
-                'assigned' => true,
-                'assignedName' => 'Carlo',
-                'assignedInitials' => 'C',
-                'priority' => 'NORMAL',
-                'status' => 'IN PROGRESS',
-                'reported' => Carbon::now()->subHours(3)->format('M d, Y'),
-                'date' => Carbon::now()->format('Y-m-d'),
-            ],
-            [
-                'id' => 3,
-                'ref' => '#MT-903',
-                'subject' => 'Hallway light bulb replacement',
-                'location' => '2nd Floor Hallway',
-                'assigned' => true,
-                'assignedName' => 'Bella',
-                'assignedInitials' => 'B',
-                'priority' => 'MEDIUM',
-                'status' => 'RESOLVED',
-                'reported' => Carbon::now()->subDays(1)->format('M d, Y'),
-                'date' => Carbon::now()->subDays(1)->format('Y-m-d'),
-            ],
-        ];
+        return MaintenanceReport::orderBy('id')->get()->toArray();
     }
 
     public function index(Request $request)
@@ -78,7 +20,7 @@ class MaintenanceController extends Controller
         $month = $request->get('month', now()->month);
         $year = $request->get('year', now()->year);
 
-        $tickets = $this->getTicketsStorage();
+$tickets = self::getTickets();
 
         // Calculate summary statistics (all tickets)
         $openTickets = count(array_filter($tickets, fn($t) => $t['status'] === 'NEW'));
@@ -142,59 +84,48 @@ class MaintenanceController extends Controller
             'description' => 'nullable|string',
         ]);
 
-        $tickets = $this->getTicketsStorage();
-        
-        // Generate new ID and reference number
-        $newId = $tickets ? max(array_column($tickets, 'id')) + 1 : 1;
-        $newRef = '#MT-' . str_pad($newId + 900, 3, '0', STR_PAD_LEFT);
-
-        $reportedDate = Carbon::parse($validated['report_date'])->format('M d, Y');
-
-        $newTicket = [
-            'id'              => $newId,
-            'ref'             => $newRef,
+        $ticket = MaintenanceReport::create([
+            'ref'              => '',
             'subject'         => $validated['subject'],
             'location'        => $validated['location'],
             'assigned'        => false,
-            'assignedName'    => '',
-            'assignedInitials'=> '',
+            'assigned_name'   => '',
+            'assigned_initials'=> '',
             'priority'        => $validated['priority'],
             'status'          => 'NEW',
-            'reported'        => $reportedDate,
-            'date'            => $validated['report_date'],
-        ];
+            'report_date'     => $validated['report_date'],
+            'description'     => $validated['description'] ?? null,
+        ]);
 
-        $tickets[] = $newTicket;
-        $this->saveTickets($tickets);
+        $ticket->ref = '#MT-' . str_pad($ticket->id + 900, 3, '0', STR_PAD_LEFT);
+        $ticket->save();
 
         return response()->json([
             'success' => true,
             'message' => 'Maintenance report created successfully!',
-            'ticket' => $newTicket
+            'ticket' => $ticket->toArray(),
         ]);
     }
 
     public function resolve($id, Request $request)
     {
-        $tickets = $this->getTicketsStorage();
-        
-        foreach ($tickets as &$ticket) {
-            if ($ticket['id'] == $id) {
-                $ticket['status'] = 'RESOLVED';
-                $this->saveTickets($tickets);
-                
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Issue marked as resolved!',
-                    'ticket' => $ticket
-                ]);
-            }
+        $ticket = MaintenanceReport::find($id);
+
+        if (! $ticket) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ticket not found!'
+            ], 404);
         }
 
+        $ticket->status = 'RESOLVED';
+        $ticket->save();
+
         return response()->json([
-            'success' => false,
-            'message' => 'Ticket not found!'
-        ], 404);
+            'success' => true,
+            'message' => 'Issue marked as resolved!',
+            'ticket' => $ticket->toArray()
+        ]);
     }
 
     public function assignTechnician($id, Request $request)
@@ -203,31 +134,29 @@ class MaintenanceController extends Controller
             'technician' => 'required|string|max:255',
         ]);
 
-        $tickets = $this->getTicketsStorage();
+        $ticket = MaintenanceReport::find($id);
 
-        foreach ($tickets as &$ticket) {
-            if ($ticket['id'] == $id) {
-                $ticket['assigned'] = true;
-                $ticket['assignedName'] = $validated['technician'];
-                $ticket['assignedInitials'] = $this->generateInitials($validated['technician']);
-                if ($ticket['status'] === 'NEW') {
-                    $ticket['status'] = 'IN PROGRESS';
-                }
-
-                $this->saveTickets($tickets);
-
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Technician assigned successfully!',
-                    'ticket' => $ticket
-                ]);
-            }
+        if (! $ticket) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ticket not found!'
+            ], 404);
         }
 
+        $ticket->assigned = true;
+        $ticket->assigned_name = $validated['technician'];
+        $ticket->assigned_initials = $this->generateInitials($validated['technician']);
+        if ($ticket->status === 'NEW') {
+            $ticket->status = 'IN PROGRESS';
+        }
+
+        $ticket->save();
+
         return response()->json([
-            'success' => false,
-            'message' => 'Ticket not found!'
-        ], 404);
+            'success' => true,
+            'message' => 'Technician assigned successfully!',
+            'ticket' => $ticket->toArray()
+        ]);
     }
 
     public function updateStatus($id, Request $request)
@@ -236,25 +165,23 @@ class MaintenanceController extends Controller
             'status' => 'required|in:NEW,IN PROGRESS,RESOLVED',
         ]);
 
-        $tickets = $this->getTicketsStorage();
-        
-        foreach ($tickets as &$ticket) {
-            if ($ticket['id'] == $id) {
-                $ticket['status'] = $validated['status'];
-                $this->saveTickets($tickets);
-                
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Status updated successfully!',
-                    'ticket' => $ticket
-                ]);
-            }
+        $ticket = MaintenanceReport::find($id);
+
+        if (! $ticket) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ticket not found!'
+            ], 404);
         }
 
+        $ticket->status = $validated['status'];
+        $ticket->save();
+
         return response()->json([
-            'success' => false,
-            'message' => 'Ticket not found!'
-        ], 404);
+            'success' => true,
+            'message' => 'Status updated successfully!',
+            'ticket' => $ticket->toArray()
+        ]);
     }
 
     private function getAllRoomUnits(): array
