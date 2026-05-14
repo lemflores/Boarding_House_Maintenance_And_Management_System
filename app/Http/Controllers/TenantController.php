@@ -127,7 +127,7 @@ class TenantController extends Controller
                     $leaseRemaining = "Expiring in {$days} Days";
                     $leaseUrgency = 'text-orange-500';
                 } else {
-                    $months = (int)$now->diffInMonths($tenant->lease_end);
+                    $months = round($now->diffInMonths($tenant->lease_end));
                     $leaseRemaining = "{$months} Months Remaining";
                     $leaseUrgency = 'text-gray-400';
                 }
