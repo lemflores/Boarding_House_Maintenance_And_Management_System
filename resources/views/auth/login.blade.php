@@ -177,10 +177,10 @@
             </div>
 
             <div>
-                <label for="register_email" class="block text-[12px] font-semibold text-[#2d1a0e] mb-1.5">Email <span class="text-gray-400">(optional)</span></label>
+                <label for="register_email" class="block text-[12px] font-semibold text-[#2d1a0e] mb-1.5">Email</label>
                 <input id="register_email" name="email" type="email" value="{{ old('email') }}"
                        class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-[13px] text-gray-700 outline-none focus:border-[#7c3a1e] transition-colors"
-                       placeholder="e.g. jane@bahay.com">
+                       placeholder="e.g. jane@bahay.com" required>
                 @error('email')<p class="text-red-600 text-xs mt-1">{{ $message }}</p>@enderror
             </div>
 
