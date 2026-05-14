@@ -120,7 +120,7 @@ class TenantController extends Controller
         if ($tenant->lease_end) {
             if ($tenant->lease_end->isPast()) {
                 $leaseRemaining = 'Expired';
-                $leaseUrgency = 'text-red-600';
+                $leaseUrgency = $tenant->payment_status === 'Paid' ? 'text-gray-400' : 'text-red-600';
             } else {
                 $days = $now->diffInDays($tenant->lease_end);
                 if ($days <= 30) {

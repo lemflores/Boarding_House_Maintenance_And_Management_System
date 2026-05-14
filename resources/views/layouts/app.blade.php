@@ -8,6 +8,37 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        /* Custom styles for datalist dropdown positioning */
+        input[list] {
+            position: relative;
+        }
+        datalist {
+            position: absolute;
+            background: white;
+            border: 1px solid #ede7df;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            width: 100%;
+            top: 100%;
+            left: 0;
+            margin-top: 2px;
+        }
+        datalist option {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f5f0eb;
+        }
+        datalist option:hover {
+            background-color: #faf7f4;
+        }
+        datalist option:last-child {
+            border-bottom: none;
+        }
+    </style>
 </head>
 <body class="bg-[#f5f0eb] font-sans antialiased overflow-x-hidden">
 
@@ -51,7 +82,28 @@
         </nav>
 
         {{-- Footer --}}
-        <div class="px-5 py-4 border-t border-[#ede7df]">
+        <div class="px-5 py-4 border-t border-[#ede7df] space-y-2">
+            <a href="{{ route('settings.index') }}"
+               class="flex items-center px-3 py-2 text-[12px] font-medium text-gray-400 hover:text-[#2d1a0e] hover:bg-[#faf7f4] rounded-lg transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.592c.55 0 1.02.398 1.11.94m-.213 9.526c.106.734.435 1.408.995 1.838m0 0A24.226 24.226 0 0021.514 20.022M2.486 20.022A24.226 24.226 0 0015.064 15.404m-9.141-5.95a6 6 0 1112 0 6 6 0 01-12 0zm12 0c0 1.657-.672 3.157-1.757 4.243A4.243 4.243 0 0015.604 15.12" />
+                </svg>
+                Settings
+            </a>
+            <a href="{{ route('help-center') }}"
+               class="flex items-center px-3 py-2 text-[12px] font-medium text-gray-400 hover:text-[#2d1a0e] hover:bg-[#faf7f4] rounded-lg transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.90.63-2.295.968-3.862.968a3.883 3.883 0 01-3.716-3.7m12.753-1.007A6.5 6.5 0 1015.75 7.5M9.879 16.481c-1.171-1.025-1.171-2.687 0-3.712.9-.63 2.295-.969 3.862-.969 1.903 0 3.716.981 3.716 3.7m-12.753 1.007A6.5 6.5 0 0021.75 15M12 12a3 3 0 100-6 3 3 0 000 6zm0 6a3 3 0 100-6 3 3 0 000 6z" />
+                </svg>
+                Help
+            </a>
+            <a href="{{ route('logout') }}"
+               class="flex items-center px-3 py-2 text-[12px] font-medium text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+                </svg>
+                Logout
+            </a>
         </div>
     </aside>
 

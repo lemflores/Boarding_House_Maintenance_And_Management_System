@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -15,36 +17,43 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email'    => ['required', 'email'],
+            'username'    => ['required'],
             'password' => ['required'],
         ]);
 
-        // Demo: accept any credentials and redirect to dashboard
-        // In production: if (Auth::attempt($credentials, $request->boolean('remember'))) { ... }
-        return redirect()->route('dashboard');
+        if (Auth::attempt(['username' => $credentials['username'], 'password' => $credentials['password']], $request->boolean('remember'))) {
+            $request->session()->regenerate();
+            return redirect()->route('dashboard');
+        }
+
+        return back()->withErrors([
+            'username' => 'The provided username or password is incorrect.',
+        ])->onlyInput('username');
     }
 
     public function register(Request $request)
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'username' => ['required', 'string', 'max:255', 'unique:users,username'],
+            'email' => ['nullable', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'from_register' => ['nullable'],
         ]);
 
         User::create([
             'name' => $validated['name'],
+            'username' => $validated['username'],
             'email' => $validated['email'],
-            'password' => $validated['password'],
+            'password' => Hash::make($validated['password']),
         ]);
 
-        return redirect()->route('login')->with('registered', 'Your account has been created. Please sign in.');
+        return redirect()->route('login')->with('registered', 'Your account has been created. Please sign in with your username and password.');
     }
 
     public function logout()
     {
-        // Auth::logout();
+        Auth::logout();
         return redirect()->route('login');
     }
 }

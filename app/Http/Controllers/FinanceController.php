@@ -99,7 +99,7 @@ class FinanceController extends Controller
         $months = (int)$request->months;
         $amount = $months * 3000;
         $dueDate = now()->addMonths($months);
-        $status = 'pending';
+        $status = 'paid'; // Assuming this is for a paid record
 
         $payment = Payment::create([
             'tenant_id' => $tenant->id,
@@ -109,8 +109,16 @@ class FinanceController extends Controller
             'notes' => $request->notes,
         ]);
 
+        // Extend lease if paying for multiple months
+        if ($months > 1) {
+            $extendedLeaseEnd = now()->addMonths($months);
+            if ($tenant->lease_end < $extendedLeaseEnd) {
+                $tenant->lease_end = $extendedLeaseEnd;
+            }
+        }
+
         $tenant->update([
-            'payment_status' => 'Pending',
+            'payment_status' => 'Paid',
         ]);
 
         return redirect()->route('finances')->with('success', 'Payment record created successfully.');

@@ -7,6 +7,7 @@ use App\Http\Controllers\TenantController;
 use App\Http\Controllers\UtilityController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\MaintenanceController;
+use App\Http\Controllers\SettingsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,3 +48,13 @@ Route::post('/maintenance', [MaintenanceController::class,'store'])->name('maint
 Route::post('/maintenance/{id}/resolve', [MaintenanceController::class,'resolve'])->name('maintenance.resolve');
 Route::post('/maintenance/{id}/assign', [MaintenanceController::class,'assignTechnician'])->name('maintenance.assign');
 Route::post('/maintenance/{id}/update-status', [MaintenanceController::class,'updateStatus'])->name('maintenance.updateStatus');
+
+/*
+|--------------------------------------------------------------------------
+| Settings & Help Routes
+|--------------------------------------------------------------------------
+*/
+Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
+Route::put('/settings/change-password', [SettingsController::class, 'changePassword'])->name('settings.change-password');
+Route::get('/help-center', [SettingsController::class, 'helpCenter'])->name('help-center');

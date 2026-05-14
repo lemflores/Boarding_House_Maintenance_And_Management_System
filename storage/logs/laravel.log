@@ -7312,3 +7312,18 @@ Dear Rafael Santos, this is a reminder that your payment of ₱45,000.00 for uni
 #55 D:/baki/projects ni baki/IT9/Boarding_House_Maintenance_And_Management_System/vendor/laravel/framework/src/Illuminate/Foundation/resources/server.php(23): require_once('...')
 #56 {main}
 "} 
+[2026-05-14 15:58:35] local.ERROR: The "--grep" option does not exist. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\RuntimeException(code: 0): The \"--grep\" option does not exist. at D:/baki/projects ni baki/IT9/Boarding_House_Maintenance_And_Management_System/vendor/symfony/console/Input/ArgvInput.php:226)
+[stacktrace]
+#0 D:/baki/projects ni baki/IT9/Boarding_House_Maintenance_And_Management_System/vendor/symfony/console/Input/ArgvInput.php(153): Symfony/Component/Console/Input/ArgvInput->addLongOption()
+#1 D:/baki/projects ni baki/IT9/Boarding_House_Maintenance_And_Management_System/vendor/symfony/console/Input/ArgvInput.php(88): Symfony/Component/Console/Input/ArgvInput->parseLongOption()
+#2 D:/baki/projects ni baki/IT9/Boarding_House_Maintenance_And_Management_System/vendor/symfony/console/Input/ArgvInput.php(77): Symfony/Component/Console/Input/ArgvInput->parseToken()
+#3 D:/baki/projects ni baki/IT9/Boarding_House_Maintenance_And_Management_System/vendor/symfony/console/Input/Input.php(53): Symfony/Component/Console/Input/ArgvInput->parse()
+#4 D:/baki/projects ni baki/IT9/Boarding_House_Maintenance_And_Management_System/vendor/symfony/console/Command/Command.php(295): Symfony/Component/Console/Input/Input->bind()
+#5 D:/baki/projects ni baki/IT9/Boarding_House_Maintenance_And_Management_System/vendor/laravel/framework/src/Illuminate/Console/Command.php(182): Symfony/Component/Console/Command/Command->run()
+#6 D:/baki/projects ni baki/IT9/Boarding_House_Maintenance_And_Management_System/vendor/symfony/console/Application.php(1117): Illuminate/Console/Command->run()
+#7 D:/baki/projects ni baki/IT9/Boarding_House_Maintenance_And_Management_System/vendor/symfony/console/Application.php(356): Symfony/Component/Console/Application->doRunCommand()
+#8 D:/baki/projects ni baki/IT9/Boarding_House_Maintenance_And_Management_System/vendor/symfony/console/Application.php(195): Symfony/Component/Console/Application->doRun()
+#9 D:/baki/projects ni baki/IT9/Boarding_House_Maintenance_And_Management_System/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony/Component/Console/Application->run()
+#10 D:/baki/projects ni baki/IT9/Boarding_House_Maintenance_And_Management_System/artisan(15): Illuminate/Foundation/Console/Kernel->handle()
+#11 {main}
+"} 

@@ -60,7 +60,7 @@
                         placeholder="Search and select tenant...">
                 <datalist id="tenantsList">
                     @foreach($tenants as $tenant)
-                        <option value="{{ $tenant->name }} (Unit {{ $tenant->unit }})" data-id="{{ $tenant->id }}">
+                        <option value="{{ $tenant->name }} (Unit {{ $tenant->unit }}) - {{ $tenant->payment_status }}" data-id="{{ $tenant->id }}">
                     @endforeach
                 </datalist>
                 <input type="hidden" name="tenant_id" id="tenant_id" value="{{ old('tenant_id') }}">

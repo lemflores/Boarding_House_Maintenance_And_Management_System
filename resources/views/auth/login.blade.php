@@ -72,21 +72,22 @@
             <form method="POST" action="{{ route('login.post') }}" class="space-y-4">
                 @csrf
 
-                {{-- Email --}}
+                {{-- Username --}}
                 <div>
-                    <label for="email" class="block text-[12px] font-semibold text-[#2d1a0e] mb-1.5">
-                        Manager Email
+                    <label for="username" class="block text-[12px] font-semibold text-[#2d1a0e] mb-1.5">
+                        Username
                     </label>
                     <div class="flex items-center border border-gray-200 rounded-lg px-3 py-2.5 gap-2 focus-within:border-[#7c3a1e] transition-colors">
                         <span class="text-gray-400 text-[13px] leading-none"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-  <path fill-rule="evenodd" d="M17.834 6.166a8.25 8.25 0 1 0 0 11.668.75.75 0 0 1 1.06 1.06c-3.807 3.808-9.98 3.808-13.788 0-3.808-3.807-3.808-9.98 0-13.788 3.807-3.808 9.98-3.808 13.788 0A9.722 9.722 0 0 1 21.75 12c0 .975-.296 1.887-.809 2.571-.514.685-1.28 1.179-2.191 1.179-.904 0-1.666-.487-2.18-1.164a5.25 5.25 0 1 1-.82-6.26V8.25a.75.75 0 0 1 1.5 0V12c0 .682.208 1.27.509 1.671.3.401.659.579.991.579.332 0 .69-.178.991-.579.3-.4.509-.99.509-1.671a8.222 8.222 0 0 0-2.416-5.834ZM15.75 12a3.75 3.75 0 1 0-7.5 0 3.75 3.75 0 0 0 7.5 0Z" clip-rule="evenodd" />
+  <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM1.5 20.25a7.5 7.5 0 0 1 14.99 0A.75.75 0 0 0 16.5 21H3a.75.75 0 0 0 .75-.75Z" clip-rule="evenodd" />
 </svg>
 </span>
-                        <input id="email" type="email" name="email" value="{{ old('email') }}"
-                               placeholder="e.g. ilustrado@bahay.com"
+                        <input id="username" type="text" name="username" value="{{ old('username') }}"
+                               placeholder="e.g. manager123"
                                class="flex-1 text-[13px] text-gray-700 outline-none bg-transparent placeholder-gray-300"
                                autofocus required>
                     </div>
+                    @error('username')<p class="text-red-600 text-xs mt-1">{{ $message }}</p>@enderror
                 </div>
 
                 {{-- Password --}}
@@ -164,13 +165,23 @@
                 <input id="name" name="name" type="text" value="{{ old('name') }}"
                        class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-[13px] text-gray-700 outline-none focus:border-[#7c3a1e] transition-colors"
                        placeholder="Jane Doe" required>
+                @error('name')<p class="text-red-600 text-xs mt-1">{{ $message }}</p>@enderror
             </div>
 
             <div>
-                <label for="register_email" class="block text-[12px] font-semibold text-[#2d1a0e] mb-1.5">Email</label>
+                <label for="register_username" class="block text-[12px] font-semibold text-[#2d1a0e] mb-1.5">Username</label>
+                <input id="register_username" name="username" type="text" value="{{ old('username') }}"
+                       class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-[13px] text-gray-700 outline-none focus:border-[#7c3a1e] transition-colors"
+                       placeholder="e.g. manager123" required>
+                @error('username')<p class="text-red-600 text-xs mt-1">{{ $message }}</p>@enderror
+            </div>
+
+            <div>
+                <label for="register_email" class="block text-[12px] font-semibold text-[#2d1a0e] mb-1.5">Email <span class="text-gray-400">(optional)</span></label>
                 <input id="register_email" name="email" type="email" value="{{ old('email') }}"
                        class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-[13px] text-gray-700 outline-none focus:border-[#7c3a1e] transition-colors"
-                       placeholder="e.g. ilustrado@bahay.com" required>
+                       placeholder="e.g. jane@bahay.com">
+                @error('email')<p class="text-red-600 text-xs mt-1">{{ $message }}</p>@enderror
             </div>
 
             <div>
@@ -178,6 +189,7 @@
                 <input id="register_password" name="password" type="password"
                        class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-[13px] text-gray-700 outline-none focus:border-[#7c3a1e] transition-colors"
                        placeholder="Minimum 8 characters" required>
+                @error('password')<p class="text-red-600 text-xs mt-1">{{ $message }}</p>@enderror
             </div>
 
             <div>
