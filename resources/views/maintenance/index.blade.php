@@ -227,12 +227,12 @@
 
             <div>
                 <label class="block text-[12px] font-semibold text-[#2d1a0e] mb-2">Location/Unit *</label>
-                <select name="location" required class="w-full px-3 py-2 border border-[#ede7df] rounded-lg text-[13px] focus:outline-none focus:border-[#7c3a1e]">
-                    <option value="">Select a unit...</option>
+                <input type="text" name="location" required list="unitsList" class="w-full px-3 py-2 border border-[#ede7df] rounded-lg text-[13px] focus:outline-none focus:border-[#7c3a1e]" placeholder="Search and select unit...">
+                <datalist id="unitsList">
                     @foreach ($units as $unit)
-                        <option value="Unit {{ $unit['number'] }}">Unit {{ $unit['number'] }}@if($unit['occupied']) (Occupied)@endif</option>
+                        <option value="Unit {{ $unit['number'] }}">
                     @endforeach
-                </select>
+                </datalist>
             </div>
 
             <div>

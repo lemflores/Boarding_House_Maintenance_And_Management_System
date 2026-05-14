@@ -92,7 +92,7 @@
     {{-- Tenant Notifications --}}
     <div class="col-span-1 lg:col-span-2">
         @if($expiredTenants->count() > 0 || $almostExpiredTenants->count() > 0)
-        <div class="mb-6">
+        <div class="bg-white rounded-xl border border-[#ede7df] p-6 mb-6">
             <h3 class="text-[15px] font-bold text-[#2d1a0e] mb-4">Tenant Lease Alerts</h3>
             <div class="space-y-3">
                 {{-- Expired Tenants --}}

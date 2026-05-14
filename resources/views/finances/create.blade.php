@@ -55,15 +55,15 @@
                 <label for="tenant_id" class="block text-[11px] font-semibold uppercase tracking-[0.12em] text-gray-500 mb-2">
                     Tenant <span class="text-red-500">*</span>
                 </label>
-                <select name="tenant_id" id="tenant_id" required
-                        class="w-full px-4 py-3 border border-[#e5e7eb] rounded-lg text-[14px] focus:border-[#7c3a1e] focus:outline-none">
-                    <option value="">-- Select a tenant --</option>
+                <input type="text" name="tenant_name" id="tenant_name" required
+                        list="tenantsList" class="w-full px-4 py-3 border border-[#e5e7eb] rounded-lg text-[14px] focus:border-[#7c3a1e] focus:outline-none"
+                        placeholder="Search and select tenant...">
+                <datalist id="tenantsList">
                     @foreach($tenants as $tenant)
-                        <option value="{{ $tenant->id }}" {{ old('tenant_id') == $tenant->id ? 'selected' : '' }}>
-                            {{ $tenant->name }} (Unit {{ $tenant->unit }})
-                        </option>
+                        <option value="{{ $tenant->name }} (Unit {{ $tenant->unit }})" data-id="{{ $tenant->id }}">
                     @endforeach
-                </select>
+                </datalist>
+                <input type="hidden" name="tenant_id" id="tenant_id" value="{{ old('tenant_id') }}">
                 @error('tenant_id')<p class="text-red-600 text-xs mt-1">{{ $message }}</p>@enderror
             </div>
 
@@ -180,6 +180,20 @@ document.addEventListener('DOMContentLoaded', function() {
     if (monthsSelect.value) {
         updatePaymentAmount();
     }
+
+    // Handle tenant selection from datalist
+    const tenantInput = document.getElementById('tenant_name');
+    const tenantIdInput = document.getElementById('tenant_id');
+    const tenantsList = document.getElementById('tenantsList');
+
+    tenantInput.addEventListener('input', function() {
+        const selectedOption = Array.from(tenantsList.options).find(option => option.value === this.value);
+        if (selectedOption) {
+            tenantIdInput.value = selectedOption.getAttribute('data-id');
+        } else {
+            tenantIdInput.value = '';
+        }
+    });
 });
 </script>
 

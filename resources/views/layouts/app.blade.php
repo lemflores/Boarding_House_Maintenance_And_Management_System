@@ -51,19 +51,7 @@
         </nav>
 
         {{-- Footer --}}
-        <div class="px-5 py-4 border-t border-[#ede7df] space-y-1">
-            <a href="#" class="flex items-center gap-2 text-[12px] text-gray-400 hover:text-[#7c3a1e] transition-colors py-0.5">
-                <span class="text-[11px]"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
-</svg>
-</span> Help Center
-            </a>
-            <a href="{{ route('login') }}" class="flex items-center gap-2 text-[12px] text-gray-400 hover:text-[#7c3a1e] transition-colors py-0.5">
-                <span class="text-[11px]"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
-</svg>
-</span> Logout
-            </a>
+        <div class="px-5 py-4 border-t border-[#ede7df]">
         </div>
     </aside>
 
@@ -88,7 +76,51 @@
                 <div id="topbarNotificationDropdown" class="absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-lg z-50 hidden text-sm">
                     <div class="p-4 space-y-2">
                         <p class="text-sm font-semibold text-[#2d1a0e]">Notifications</p>
-                        <p class="text-xs text-gray-500">You have no new notifications.</p>
+                        <div class="space-y-2 max-h-64 overflow-y-auto">
+                            {{-- Tenant Lease Alerts --}}
+                            @if(isset($expiredTenants) && $expiredTenants->count() > 0)
+                                @foreach($expiredTenants->take(3) as $tenant)
+                                <div class="flex items-start gap-3 p-2 bg-red-50 rounded-lg">
+                                    <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center text-red-600 flex-shrink-0 font-bold text-xs">
+                                        {{ substr($tenant->name, 0, 1) }}{{ substr($tenant->name, strpos($tenant->name, ' ') + 1, 1) ?? '' }}
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-xs font-semibold text-red-800">{{ $tenant->name }} - Unit {{ $tenant->unit }}</p>
+                                        <p class="text-xs text-red-600">Lease expired {{ $tenant->lease_end->diffForHumans() }}</p>
+                                    </div>
+                                </div>
+                                @endforeach
+                            @endif
+                            @if(isset($almostExpiredTenants) && $almostExpiredTenants->count() > 0)
+                                @foreach($almostExpiredTenants->take(3) as $tenant)
+                                <div class="flex items-start gap-3 p-2 bg-orange-50 rounded-lg">
+                                    <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-600 flex-shrink-0 font-bold text-xs">
+                                        {{ substr($tenant->name, 0, 1) }}{{ substr($tenant->name, strpos($tenant->name, ' ') + 1, 1) ?? '' }}
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-xs font-semibold text-orange-800">{{ $tenant->name }} - Unit {{ $tenant->unit }}</p>
+                                        <p class="text-xs text-orange-600">Lease expires in {{ now()->diffInDays($tenant->lease_end) }} days</p>
+                                    </div>
+                                </div>
+                                @endforeach
+                            @endif
+                            {{-- Maintenance Issues --}}
+                            @if(isset($maintenanceItems) && count($maintenanceItems) > 0)
+                                @foreach($maintenanceItems as $item)
+                                <div class="flex items-start gap-3 p-2 bg-gray-50 rounded-lg">
+                                    <div class="w-8 h-8 {{ $item['iconBg'] }} rounded-full flex items-center justify-center flex-shrink-0">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-xs font-semibold text-gray-800">{{ $item['title'] }}</p>
+                                        <p class="text-xs text-gray-600">{{ $item['meta'] }}</p>
+                                    </div>
+                                </div>
+                                @endforeach
+                            @endif
+                        </div>
                         <a href="{{ route('dashboard') }}" class="block text-sm text-[#7c3a1e] hover:underline">View all notifications</a>
                     </div>
                 </div>
@@ -103,8 +135,8 @@
                 </button>
 
                 <div id="topbarProfileDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg z-50 hidden text-sm">
-                    <a href="{{ route('dashboard') }}" class="block px-4 py-3 text-gray-700 hover:bg-[#f5f0eb]">Profile</a>
-                    <a href="{{ route('utility') }}" class="block px-4 py-3 text-gray-700 hover:bg-[#f5f0eb]">Settings</a>
+                    <a href="{{ route('dashboard') }}" class="block px-4 py-3 text-gray-700 hover:bg-[#f5f0eb]">Account Settings</a>
+                    <a href="{{ route('utility') }}" class="block px-4 py-3 text-gray-700 hover:bg-[#f5f0eb]">Help Center</a>
                     <div class="border-t border-[#ede7df]"></div>
                     <a href="{{ route('logout') }}" class="block px-4 py-3 text-gray-700 hover:bg-[#f5f0eb]">Logout</a>
                 </div>
