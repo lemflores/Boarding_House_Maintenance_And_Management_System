@@ -227,12 +227,20 @@
 
             <div>
                 <label class="block text-[12px] font-semibold text-[#2d1a0e] mb-2">Location/Unit *</label>
-                <input type="text" name="location" required list="unitsList" class="w-full px-3 py-2 border border-[#ede7df] rounded-lg text-[13px] focus:outline-none focus:border-[#7c3a1e]" placeholder="Search and select unit...">
-                <datalist id="unitsList">
+                <input type="hidden" name="location" id="maintenance-location-input">
+                <div class="relative">
+                    <input type="text" id="maintenance-location-search" required class="w-full px-3 py-2 border border-[#ede7df] rounded-lg text-[13px] focus:outline-none focus:border-[#7c3a1e]" placeholder="Search and select unit..." autocomplete="off">
+                    <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div id="maintenance-location-dropdown" class="absolute z-10 w-full bg-white border border-[#ede7df] rounded-lg shadow-lg mt-1 max-h-48 overflow-y-auto hidden">
                     @foreach ($units as $unit)
-                        <option value="Unit {{ $unit['number'] }}">
+                        <div class="maintenance-unit-option px-4 py-2 hover:bg-[#faf7f4] cursor-pointer text-sm" data-value="Unit {{ $unit['number'] }}">Unit {{ $unit['number'] }}</div>
                     @endforeach
-                </datalist>
+                </div>
             </div>
 
             <div>
@@ -546,6 +554,53 @@ function resolveIssue(ticketId) {
         alert('Resolved but backend update failed.');
     });
 }
+
+// Searchable dropdown for maintenance location/unit
+document.addEventListener('DOMContentLoaded', function() {
+    const locationSearch = document.getElementById('maintenance-location-search');
+    const locationDropdown = document.getElementById('maintenance-location-dropdown');
+    const locationInput = document.getElementById('maintenance-location-input');
+    const locationOptions = document.querySelectorAll('.maintenance-unit-option');
+
+    // Toggle dropdown
+    locationSearch.addEventListener('focus', function() {
+        locationDropdown.classList.remove('hidden');
+        filterLocationOptions('');
+    });
+
+    locationSearch.addEventListener('input', function() {
+        filterLocationOptions(this.value);
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!locationSearch.contains(e.target) && !locationDropdown.contains(e.target)) {
+            locationDropdown.classList.add('hidden');
+        }
+    });
+
+    // Handle option selection
+    locationOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            const value = this.getAttribute('data-value');
+            locationSearch.value = value;
+            locationInput.value = value;
+            locationDropdown.classList.add('hidden');
+        });
+    });
+
+    function filterLocationOptions(searchTerm) {
+        const term = searchTerm.toLowerCase();
+        locationOptions.forEach(option => {
+            const text = option.textContent.toLowerCase();
+            if (text.includes(term)) {
+                option.style.display = 'block';
+            } else {
+                option.style.display = 'none';
+            }
+        });
+    }
+});
 </script>
 
 @endsection

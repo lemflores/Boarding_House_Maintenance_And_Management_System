@@ -28,3 +28,58 @@
 </div>
 
 @endsection
+
+@section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const unitSearch = document.getElementById('unit-search');
+    const unitDropdown = document.getElementById('unit-dropdown');
+    const unitInput = document.getElementById('unit-input');
+    const unitOptions = document.querySelectorAll('.unit-option');
+
+    // Set initial value if exists
+    if (unitInput.value) {
+        unitSearch.value = unitInput.value;
+    }
+
+    // Toggle dropdown
+    unitSearch.addEventListener('focus', function() {
+        unitDropdown.classList.remove('hidden');
+        filterOptions('');
+    });
+
+    unitSearch.addEventListener('input', function() {
+        filterOptions(this.value);
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!unitSearch.contains(e.target) && !unitDropdown.contains(e.target)) {
+            unitDropdown.classList.add('hidden');
+        }
+    });
+
+    // Handle option selection
+    unitOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            const value = this.getAttribute('data-value');
+            unitSearch.value = value;
+            unitInput.value = value;
+            unitDropdown.classList.add('hidden');
+        });
+    });
+
+    function filterOptions(searchTerm) {
+        const term = searchTerm.toLowerCase();
+        unitOptions.forEach(option => {
+            const text = option.textContent.toLowerCase();
+            if (text.includes(term)) {
+                option.style.display = 'block';
+            } else {
+                option.style.display = 'none';
+            }
+        });
+    }
+});
+</script>
+@endsection

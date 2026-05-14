@@ -13,16 +13,24 @@
             <label class="block text-[11px] font-semibold uppercase tracking-[0.12em] text-gray-500 mb-2">
                 Unit <span class="text-red-500">*</span>
             </label>
-            <input type="text" name="unit" required value="{{ old('unit', isset($tenant) ? $tenant->unit : '') }}"
-                   list="availableUnits" class="w-full rounded-lg border border-[#e5e7eb] px-4 py-2 text-sm text-gray-700 focus:border-[#7c3a1e] outline-none"
-                   placeholder="Search and select unit...">
-            <datalist id="availableUnits">
-                @if(isset($availableUnits))
-                    @foreach($availableUnits as $unitNumber)
-                        <option value="{{ $unitNumber }}">
-                    @endforeach
-                @endif
-            </datalist>
+            <div class="relative">
+                <input type="hidden" name="unit" value="{{ old('unit', isset($tenant) ? $tenant->unit : '') }}" id="unit-input">
+                <div class="relative">
+                    <input type="text" id="unit-search" class="w-full rounded-lg border border-[#e5e7eb] px-4 py-2 text-sm text-gray-700 focus:border-[#7c3a1e] outline-none" placeholder="Search and select unit..." autocomplete="off">
+                    <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div id="unit-dropdown" class="absolute z-10 w-full bg-white border border-[#e5e7eb] rounded-lg shadow-lg mt-1 max-h-48 overflow-y-auto hidden">
+                    @if(isset($availableUnits))
+                        @foreach($availableUnits as $unitNumber)
+                            <div class="unit-option px-4 py-2 hover:bg-[#faf7f4] cursor-pointer text-sm" data-value="{{ $unitNumber }}">{{ $unitNumber }}</div>
+                        @endforeach
+                    @endif
+                </div>
+            </div>
             @error('unit')<p class="text-red-600 text-xs mt-1">{{ $message }}</p>@enderror
         </div>
     </div>
