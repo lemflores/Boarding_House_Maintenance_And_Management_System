@@ -214,6 +214,12 @@
         modal.classList.toggle('hidden', !open);
         modal.classList.toggle('flex', open);
     }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        @if(Auth::check())
+            window.location = '{{ route('dashboard') }}';
+        @endif
+    });
 </script>
 
 </body>

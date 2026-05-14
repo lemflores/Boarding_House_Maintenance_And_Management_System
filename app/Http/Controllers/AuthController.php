@@ -11,7 +11,14 @@ class AuthController extends Controller
 {
     public function showLogin()
     {
-        return view('auth.login');
+        if (Auth::check()) {
+            return redirect()->route('dashboard');
+        }
+
+        return response()->view('auth.login')
+            ->header('Cache-Control', 'no-cache, no-store, max-age=0, must-revalidate')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', 'Sun, 01 Jan 1990 00:00:00 GMT');
     }
 
     public function login(Request $request)
@@ -51,9 +58,13 @@ class AuthController extends Controller
         return redirect()->route('login')->with('registered', 'Your account has been created. Please sign in with your username and password.');
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
         Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
         return redirect()->route('login');
     }
 }
