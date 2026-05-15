@@ -51,19 +51,29 @@
             @csrf
 
             {{-- Tenant Selection --}}
-            <div>
+            <div class="relative" x-data="{}">
                 <label for="tenant_id" class="block text-[11px] font-semibold uppercase tracking-[0.12em] text-gray-500 mb-2">
                     Tenant <span class="text-red-500">*</span>
                 </label>
                 <input type="text" name="tenant_name" id="tenant_name" required
-                        list="tenantsList" class="w-full px-4 py-3 border border-[#e5e7eb] rounded-lg text-[14px] focus:border-[#7c3a1e] focus:outline-none"
-                        placeholder="Search and select tenant...">
-                <datalist id="tenantsList">
-                    @foreach($tenants as $tenant)
-                        <option value="{{ $tenant['name'] }} (Unit {{ $tenant['unit'] }}) - {{ $tenant['payment_status_display'] }}" data-id="{{ $tenant['id'] }}">
-                    @endforeach
-                </datalist>
+                        value="{{ old('tenant_name') }}"
+                        class="w-full px-4 py-3 border border-[#e5e7eb] rounded-lg text-[14px] focus:border-[#7c3a1e] focus:outline-none"
+                        placeholder="Search and select tenant..." autocomplete="off">
                 <input type="hidden" name="tenant_id" id="tenant_id" value="{{ old('tenant_id') }}">
+
+                <div id="tenantDropdown" class="absolute left-0 right-0 mt-1 max-h-64 overflow-y-auto rounded-xl border border-[#e5e7df] bg-white shadow-lg z-50 hidden">
+                    @foreach($tenants as $tenant)
+                        <button type="button" class="tenant-option w-full px-4 py-3 text-left hover:bg-[#faf7f4] transition-colors" data-id="{{ $tenant['id'] }}" data-value="{{ $tenant['name'] }} (Unit {{ $tenant['unit'] }}) - {{ $tenant['payment_status_display'] }}">
+                            <div class="flex items-center justify-between gap-3">
+                                <span class="text-[14px] text-[#2d1a0e]">{{ $tenant['name'] }} (Unit {{ $tenant['unit'] }})</span>
+                                <span class="text-[11px] font-semibold {{ $tenant['payment_status_display'] === 'Paid' ? 'text-green-600' : ($tenant['payment_status_display'] === 'Overdue' ? 'text-red-600' : 'text-orange-600') }}">
+                                    {{ $tenant['payment_status_display'] }}
+                                </span>
+                            </div>
+                        </button>
+                    @endforeach
+                </div>
+
                 @error('tenant_id')<p class="text-red-600 text-xs mt-1">{{ $message }}</p>@enderror
             </div>
 
@@ -181,17 +191,61 @@ document.addEventListener('DOMContentLoaded', function() {
         updatePaymentAmount();
     }
 
-    // Handle tenant selection from datalist
     const tenantInput = document.getElementById('tenant_name');
     const tenantIdInput = document.getElementById('tenant_id');
-    const tenantsList = document.getElementById('tenantsList');
+    const tenantDropdown = document.getElementById('tenantDropdown');
+    const tenantOptions = Array.from(document.querySelectorAll('.tenant-option'));
+
+    const showDropdown = () => {
+        tenantDropdown.classList.remove('hidden');
+    };
+
+    const hideDropdown = () => {
+        tenantDropdown.classList.add('hidden');
+    };
+
+    const filterDropdown = (query) => {
+        const lowerQuery = query.trim().toLowerCase();
+        let anyVisible = false;
+
+        tenantOptions.forEach(option => {
+            const optionText = option.getAttribute('data-value').toLowerCase();
+            const visible = optionText.includes(lowerQuery);
+            option.style.display = visible ? 'block' : 'none';
+            if (visible) {
+                anyVisible = true;
+            }
+        });
+
+        if (anyVisible && query.length > 0) {
+            showDropdown();
+        } else if (query.length === 0) {
+            showDropdown();
+        } else {
+            hideDropdown();
+        }
+    };
 
     tenantInput.addEventListener('input', function() {
-        const selectedOption = Array.from(tenantsList.options).find(option => option.value === this.value);
-        if (selectedOption) {
-            tenantIdInput.value = selectedOption.getAttribute('data-id');
-        } else {
-            tenantIdInput.value = '';
+        tenantIdInput.value = '';
+        filterDropdown(this.value);
+    });
+
+    tenantInput.addEventListener('focus', function() {
+        filterDropdown(this.value);
+    });
+
+    tenantOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            tenantInput.value = this.getAttribute('data-value');
+            tenantIdInput.value = this.getAttribute('data-id');
+            hideDropdown();
+        });
+    });
+
+    document.addEventListener('click', function(event) {
+        if (!tenantInput.contains(event.target) && !tenantDropdown.contains(event.target)) {
+            hideDropdown();
         }
     });
 });
