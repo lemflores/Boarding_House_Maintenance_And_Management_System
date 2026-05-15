@@ -122,12 +122,12 @@ class FinanceController extends Controller
             'notes' => $request->notes,
         ]);
 
-        // Extend lease if paying for multiple months
-        if ($months > 1) {
-            $extendedLeaseEnd = now()->addMonths($months);
-            if ($tenant->lease_end < $extendedLeaseEnd) {
-                $tenant->lease_end = $extendedLeaseEnd;
-            }
+        // Extend lease when payment covers time beyond the current lease end.
+        $leaseStart = $tenant->lease_end && $tenant->lease_end->gt(now()) ? $tenant->lease_end : now();
+        $extendedLeaseEnd = $leaseStart->copy()->addMonths($months);
+
+        if (! $tenant->lease_end || $extendedLeaseEnd->gt($tenant->lease_end)) {
+            $tenant->lease_end = $extendedLeaseEnd;
         }
 
         $tenant->save();
