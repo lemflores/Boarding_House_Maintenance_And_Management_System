@@ -97,14 +97,7 @@ class DashboardController extends Controller
     {
         // Check if activity log has been cleared
         if (session('activity_log_cleared', false)) {
-            $activityLog = [
-                [
-                    'dotColor' => 'bg-gray-300',
-                    'title'    => 'Activity log cleared',
-                    'desc'     => 'Recent activities will appear here as they happen.',
-                ],
-            ];
-            return array_merge($activityLog, $this->getActivityLogPlaceholders(5));
+            return [];
         }
 
         $payments = Payment::with('tenant')
