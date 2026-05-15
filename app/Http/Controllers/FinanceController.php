@@ -41,7 +41,7 @@ class FinanceController extends Controller
             });
         }
 
-        $transactions = $query->paginate(10);
+        $transactions = $query->paginate(5);
 
         $mappedTransactions = $transactions->getCollection()->map(function ($payment) {
             return [

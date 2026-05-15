@@ -122,7 +122,7 @@
                             <span class="text-[13px] font-semibold text-orange-800">{{ $tenant->name }} - {{ $tenant->unit }}</span>
                             <span class="bg-orange-200 text-orange-800 text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">EXPIRING SOON</span>
                         </div>
-                        <p class="text-[11px] text-orange-600 mt-0.5">Lease expires in {{ now()->diffInDays($tenant->lease_end) }} days ({{ $tenant->lease_end->format('M d, Y') }})</p>
+                        <p class="text-[11px] text-orange-600 mt-0.5">Lease expires in {{ max(0, floor(now()->diffInDays($tenant->lease_end))) }} days ({{ $tenant->lease_end->format('M d, Y') }})</p>
                     </div>
                 </div>
                 @endforeach
@@ -158,7 +158,7 @@
     </div>
 
     {{-- Activity Log --}}
-    <div class="bg-white rounded-xl border border-[#ede7df] p-5">
+    <div class="bg-white rounded-xl border border-[#ede7df] p-5" style="min-height:420px;">
         <h3 class="text-[15px] font-bold text-[#2d1a0e] mb-4">Activity Log</h3>
         <div class="space-y-4">
             @forelse ($activityLog as $log)

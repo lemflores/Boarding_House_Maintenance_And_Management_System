@@ -30,12 +30,12 @@
             </div>
 
             <div class="flex items-center gap-2">
-                <a href="{{ route('maintenance', ['month' => $previousMonth, 'year' => $previousYear]) }}" class="bg-[#d2b48c] border border-[#b99a78] rounded-lg px-3 py-2 text-[#2d1a0e] hover:bg-[#b08a6e] hover:text-white transition-colors">
+                <a href="{{ route('maintenance', ['month' => $previousMonth, 'year' => $previousYear]) }}" class="bg-white border border-[#ede7df] rounded-lg px-3 py-2 text-[#2d1a0e] hover:bg-[#faf7f4] transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
                     </svg>
                 </a>
-                <a href="{{ route('maintenance', ['month' => $nextMonth, 'year' => $nextYear]) }}" class="bg-[#d2b48c] border border-[#b99a78] rounded-lg px-3 py-2 text-[#2d1a0e] hover:bg-[#b08a6e] hover:text-white transition-colors">
+                <a href="{{ route('maintenance', ['month' => $nextMonth, 'year' => $nextYear]) }}" class="bg-white border border-[#ede7df] rounded-lg px-3 py-2 text-[#2d1a0e] hover:bg-[#faf7f4] transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5L15.75 12l-7.5 7.5" />
                     </svg>
@@ -225,10 +225,10 @@
                 <input type="text" name="subject" required class="w-full px-3 py-2 border border-[#ede7df] rounded-lg text-[13px] focus:outline-none focus:border-[#7c3a1e]" placeholder="e.g., Water leak in bathroom">
             </div>
 
-            <div class="relative">
+            <div>
                 <label class="block text-[12px] font-semibold text-[#2d1a0e] mb-2">Location/Unit *</label>
                 <input type="hidden" name="location" id="maintenance-location-input">
-                <div>
+                <div class="relative">
                     <input type="text" id="maintenance-location-search" required class="w-full px-3 py-2 border border-[#ede7df] rounded-lg text-[13px] focus:outline-none focus:border-[#7c3a1e]" placeholder="Search and select unit..." autocomplete="off">
                     <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
                         <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -236,7 +236,7 @@
                         </svg>
                     </div>
                 </div>
-                <div id="maintenance-location-dropdown" class="absolute left-0 right-0 z-10 bg-white border border-[#ede7df] rounded-lg shadow-lg mt-1 max-h-48 overflow-y-auto hidden">
+                <div id="maintenance-location-dropdown" class="absolute z-10 w-full bg-white border border-[#ede7df] rounded-lg shadow-lg mt-1 max-h-48 overflow-y-auto hidden">
                     @foreach ($units as $unit)
                         <div class="maintenance-unit-option px-4 py-2 hover:bg-[#faf7f4] cursor-pointer text-sm" data-value="Unit {{ $unit['number'] }}">Unit {{ $unit['number'] }}</div>
                     @endforeach

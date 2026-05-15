@@ -97,18 +97,19 @@ class DashboardController extends Controller
     {
         // Check if activity log has been cleared
         if (session('activity_log_cleared', false)) {
-            return [
+            $activityLog = [
                 [
                     'dotColor' => 'bg-gray-300',
                     'title'    => 'Activity log cleared',
                     'desc'     => 'Recent activities will appear here as they happen.',
                 ],
             ];
+            return array_merge($activityLog, $this->getActivityLogPlaceholders(5));
         }
 
         $payments = Payment::with('tenant')
             ->orderByDesc('updated_at')
-            ->limit(3)
+            ->limit(6)
             ->get();
 
         $activityLog = $payments->map(function (Payment $payment) {
@@ -140,17 +141,20 @@ class DashboardController extends Controller
             ];
         })->filter()->values()->all();
 
-        if (empty($activityLog)) {
-            return [
-                [
-                    'dotColor' => 'bg-gray-300',
-                    'title'    => 'No recent activity yet',
-                    'desc'     => 'Once payments or tenant actions happen, they will appear here.',
-                ],
-            ];
+        if (count($activityLog) < 6) {
+            $activityLog = array_merge($activityLog, $this->getActivityLogPlaceholders(6 - count($activityLog)));
         }
 
         return $activityLog;
+    }
+
+    private function getActivityLogPlaceholders(int $count): array
+    {
+        return array_map(fn () => [
+            'dotColor' => 'bg-gray-300',
+            'title'    => 'Awaiting activity',
+            'desc'     => 'More events will appear in the activity feed soon.',
+        ], range(1, $count));
     }
 }
 

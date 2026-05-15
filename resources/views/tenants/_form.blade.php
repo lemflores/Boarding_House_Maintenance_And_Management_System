@@ -96,7 +96,7 @@
         <div>
             <label class="block text-[11px] font-semibold uppercase tracking-[0.12em] text-gray-500 mb-2">Payment Status</label>
             <select name="payment_status" class="w-full rounded-lg border border-[#e5e7eb] px-4 py-2 text-sm text-gray-700 focus:border-[#7c3a1e] outline-none">
-                @foreach (['Paid', 'Partially Paid', 'Pending', 'Overdue'] as $paymentOption)
+                @foreach (['Paid', 'Pending', 'Overdue'] as $paymentOption)
                     <option value="{{ $paymentOption }}" {{ old('payment_status', isset($tenant) ? $tenant->payment_status : 'Pending') === $paymentOption ? 'selected' : '' }}>{{ $paymentOption }}</option>
                 @endforeach
             </select>

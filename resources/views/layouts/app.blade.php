@@ -128,7 +128,7 @@
                                     </div>
                                     <div class="flex-1 min-w-0">
                                         <p class="text-xs font-semibold text-orange-800">{{ $tenant->name }} - Unit {{ $tenant->unit }}</p>
-                                        <p class="text-xs text-orange-600">Lease expires in {{ now()->diffInDays($tenant->lease_end) }} days</p>
+                                        <p class="text-xs text-orange-600">Lease expires in {{ max(0, floor(now()->diffInDays($tenant->lease_end))) }} days</p>
                                     </div>
                                 </div>
                                 @endforeach

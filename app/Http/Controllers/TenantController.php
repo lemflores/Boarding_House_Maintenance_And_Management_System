@@ -29,7 +29,7 @@ class TenantController extends Controller
             });
         }
 
-        $tenantModels = $query->orderBy('lease_end', 'asc')->paginate(10);
+        $tenantModels = $query->orderBy('lease_end', 'asc')->paginate(5);
 
         $tenants = $tenantModels->getCollection()->map(fn (Tenant $tenant) => $this->formatTenant($tenant))->all();
         $tenantModels->setCollection(collect($tenants));
@@ -122,7 +122,7 @@ class TenantController extends Controller
                 $leaseRemaining = 'Expired';
                 $leaseUrgency = $tenant->payment_status === 'Paid' ? 'text-gray-400' : 'text-red-600';
             } else {
-                $days = $now->diffInDays($tenant->lease_end);
+                $days = (int) floor($now->diffInDays($tenant->lease_end));
                 if ($days <= 30) {
                     $leaseRemaining = "Expiring in {$days} Days";
                     $leaseUrgency = 'text-orange-500';

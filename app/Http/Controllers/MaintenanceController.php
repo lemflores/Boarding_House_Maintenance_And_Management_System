@@ -7,6 +7,7 @@ use App\Models\Tenant;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class MaintenanceController extends Controller
 {
@@ -20,8 +21,19 @@ class MaintenanceController extends Controller
         $month = $request->get('month', now()->month);
         $year = $request->get('year', now()->year);
 
-$tickets = self::getTickets();
-
+        $tickets = self::getTickets();
+        $activeTickets = array_values(array_filter($tickets, fn($t) => $t['status'] !== 'RESOLVED'));
+        $page = LengthAwarePaginator::resolveCurrentPage();
+        $ticketPaginator = new LengthAwarePaginator(
+            array_slice($activeTickets, ($page - 1) * 5, 5),
+            count($activeTickets),
+            5,
+            $page,
+            [
+                'path' => $request->url(),
+                'query' => $request->query(),
+            ]
+        );
         // Calculate summary statistics (all tickets)
         $openTickets = count(array_filter($tickets, fn($t) => $t['status'] === 'NEW'));
         $inProgressTickets = count(array_filter($tickets, fn($t) => $t['status'] === 'IN PROGRESS'));
@@ -58,6 +70,7 @@ $tickets = self::getTickets();
 
         return view('maintenance.index', [
             'tickets'           => $tickets,
+            'ticketPaginator'   => $ticketPaginator,
             'openTickets'       => $openTickets,
             'inProgressTickets' => $inProgressTickets,
             'resolvedTickets'   => $resolvedTickets,
