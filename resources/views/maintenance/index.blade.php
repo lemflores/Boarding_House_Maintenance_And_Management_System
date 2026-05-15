@@ -235,11 +235,11 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                         </svg>
                     </div>
-                </div>
-                <div id="maintenance-location-dropdown" class="absolute z-10 w-full bg-white border border-[#ede7df] rounded-lg shadow-lg mt-1 max-h-48 overflow-y-auto hidden">
-                    @foreach ($units as $unit)
-                        <div class="maintenance-unit-option px-4 py-2 hover:bg-[#faf7f4] cursor-pointer text-sm" data-value="Unit {{ $unit['number'] }}">Unit {{ $unit['number'] }}</div>
-                    @endforeach
+                    <div id="maintenance-location-dropdown" class="absolute left-0 right-0 z-10 w-full bg-white border border-[#ede7df] rounded-lg shadow-lg mt-1 max-h-48 overflow-y-auto hidden">
+                        @foreach ($units as $unit)
+                            <div class="maintenance-unit-option px-4 py-2 hover:bg-[#faf7f4] cursor-pointer text-sm" data-value="Unit {{ $unit['number'] }}">Unit {{ $unit['number'] }}</div>
+                        @endforeach
+                    </div>
                 </div>
             </div>
 
