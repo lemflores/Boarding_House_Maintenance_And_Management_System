@@ -106,7 +106,7 @@ class TenantController extends Controller
             'lease_start' => 'required|date',
             'lease_end' => 'required|date|after_or_equal:lease_start',
             'status' => ['required', Rule::in(['Active', 'Renewal Sent', 'Pending', 'Overdue'])],
-            'payment_status' => ['required', Rule::in(['Paid', 'Pending', 'Overdue'])],
+            'payment_status' => ['required', Rule::in(['Paid', 'Partially Paid', 'Pending', 'Overdue'])],
             'notes' => 'nullable|string|max:1000',
         ]);
     }
@@ -134,6 +134,11 @@ class TenantController extends Controller
             }
         }
 
+        $paymentStatus = $tenant->payment_status;
+        if ($this->hasPartialPayment($tenant) && $paymentStatus !== 'Overdue') {
+            $paymentStatus = 'Partially Paid';
+        }
+
         return [
             'id' => $tenant->id,
             'name' => $tenant->name,
@@ -145,9 +150,9 @@ class TenantController extends Controller
             'leaseUrgency' => $leaseUrgency,
             'status' => $tenant->status,
             'statusBadge' => $this->statusBadge($tenant->status),
-            'payment' => $tenant->payment_status,
-            'paymentIcon' => $this->paymentIcon($tenant->payment_status),
-            'paymentColor' => $this->paymentColor($tenant->payment_status),
+            'payment' => $paymentStatus,
+            'paymentIcon' => $this->paymentIcon($paymentStatus),
+            'paymentColor' => $this->paymentColor($paymentStatus),
             'email' => $tenant->email,
             'phone' => $tenant->phone,
             'notes' => $tenant->notes,
@@ -181,7 +186,7 @@ class TenantController extends Controller
     {
         return match ($paymentStatus) {
             'Paid' => '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>',
-            'Pending' => '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>',
+            'Partially Paid', 'Pending' => '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>',
             default => '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>',
         };
     }
@@ -190,9 +195,15 @@ class TenantController extends Controller
     {
         return match ($paymentStatus) {
             'Paid' => 'text-green-700',
+            'Partially Paid' => 'text-orange-500',
             'Pending' => 'text-orange-500',
             default => 'text-red-600',
         };
+    }
+
+    private function hasPartialPayment(Tenant $tenant): bool
+    {
+        return $tenant->isPartiallyPaid();
     }
 
     private function getAvailableUnits(?string $currentUnit = null): array

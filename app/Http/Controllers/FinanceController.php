@@ -83,7 +83,20 @@ class FinanceController extends Controller
 
     public function create()
     {
-        $tenants = Tenant::all();
+        $tenants = Tenant::all()->map(function (Tenant $tenant) {
+            $paymentStatus = $tenant->payment_status;
+            if ($paymentStatus !== 'Overdue' && $tenant->isPartiallyPaid()) {
+                $paymentStatus = 'Partially Paid';
+            }
+
+            return [
+                'id' => $tenant->id,
+                'name' => $tenant->name,
+                'unit' => $tenant->unit,
+                'payment_status_display' => $paymentStatus,
+            ];
+        });
+
         return view('finances.create', compact('tenants'));
     }
 
@@ -117,9 +130,8 @@ class FinanceController extends Controller
             }
         }
 
-        $tenant->update([
-            'payment_status' => 'Paid',
-        ]);
+        $tenant->save();
+        $this->syncTenantPaymentStatus($tenant);
 
         return redirect()->route('finances')->with('success', 'Payment record created successfully.');
     }
@@ -133,7 +145,7 @@ class FinanceController extends Controller
         ]);
 
         if ($payment->tenant) {
-            $payment->tenant->update(['payment_status' => 'Paid']);
+            $this->syncTenantPaymentStatus($payment->tenant);
         }
 
         return redirect()->route('finances')->with('success', 'Payment marked as paid.');
@@ -154,9 +166,37 @@ class FinanceController extends Controller
     public function destroy($id)
     {
         $payment = Payment::findOrFail($id);
+        $tenant = $payment->tenant;
         $payment->delete();
 
+        if ($tenant) {
+            $this->syncTenantPaymentStatus($tenant);
+        }
+
         return redirect()->route('finances')->with('success', 'Payment record deleted successfully.');
+    }
+
+    private function syncTenantPaymentStatus(Tenant $tenant)
+    {
+        if ($tenant->payments()->where('status', 'overdue')->exists()) {
+            $tenant->update(['payment_status' => 'Overdue']);
+            return;
+        }
+
+        $paidAmount = $tenant->getPaidAmount();
+        $leaseTotalAmount = $tenant->getLeaseTotalAmount();
+
+        if ($paidAmount <= 0) {
+            $tenant->update(['payment_status' => 'Pending']);
+            return;
+        }
+
+        if ($leaseTotalAmount > 0 && $paidAmount < $leaseTotalAmount) {
+            $tenant->update(['payment_status' => 'Partially Paid']);
+            return;
+        }
+
+        $tenant->update(['payment_status' => 'Paid']);
     }
 
     public function notifyTenant($id)
