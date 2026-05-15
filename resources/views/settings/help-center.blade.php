@@ -38,15 +38,15 @@
         </h2>
         <ul class="space-y-3">
             <li class="text-[13px]">
-                <a href="#" class="text-[#7c3a1e] hover:underline font-medium">How to log in to my account</a>
+                <a href="{{ route('help-center.article', 'how-to-log-in') }}" class="text-[#7c3a1e] hover:underline font-medium">How to log in to my account</a>
                 <p class="text-gray-500 text-[12px] mt-1">Step-by-step guide to access your boarding house management dashboard.</p>
             </li>
             <li class="text-[13px]">
-                <a href="#" class="text-[#7c3a1e] hover:underline font-medium">Creating your first tenant profile</a>
+                <a href="{{ route('help-center.article', 'creating-your-first-tenant-profile') }}" class="text-[#7c3a1e] hover:underline font-medium">Creating your first tenant profile</a>
                 <p class="text-gray-500 text-[12px] mt-1">Learn how to add new tenants to your system.</p>
             </li>
             <li class="text-[13px]">
-                <a href="#" class="text-[#7c3a1e] hover:underline font-medium">Setting up payment tracking</a>
+                <a href="{{ route('help-center.article', 'setting-up-payment-tracking') }}" class="text-[#7c3a1e] hover:underline font-medium">Setting up payment tracking</a>
                 <p class="text-gray-500 text-[12px] mt-1">Configure payment records and due dates.</p>
             </li>
         </ul>
@@ -62,15 +62,15 @@
         </h2>
         <ul class="space-y-3">
             <li class="text-[13px]">
-                <a href="#" class="text-[#7c3a1e] hover:underline font-medium">How to edit tenant information</a>
+                <a href="{{ route('help-center.article', 'how-to-edit-tenant-information') }}" class="text-[#7c3a1e] hover:underline font-medium">How to edit tenant information</a>
                 <p class="text-gray-500 text-[12px] mt-1">Update tenant details, contact info, and lease terms.</p>
             </li>
             <li class="text-[13px]">
-                <a href="#" class="text-[#7c3a1e] hover:underline font-medium">Viewing tenant lease status</a>
+                <a href="{{ route('help-center.article', 'viewing-tenant-lease-status') }}" class="text-[#7c3a1e] hover:underline font-medium">Viewing tenant lease status</a>
                 <p class="text-gray-500 text-[12px] mt-1">Check lease expiration dates and renewal information.</p>
             </li>
             <li class="text-[13px]">
-                <a href="#" class="text-[#7c3a1e] hover:underline font-medium">Removing a tenant</a>
+                <a href="{{ route('help-center.article', 'removing-a-tenant') }}" class="text-[#7c3a1e] hover:underline font-medium">Removing a tenant</a>
                 <p class="text-gray-500 text-[12px] mt-1">Steps to delete tenant records from the system.</p>
             </li>
         </ul>
@@ -86,15 +86,15 @@
         </h2>
         <ul class="space-y-3">
             <li class="text-[13px]">
-                <a href="#" class="text-[#7c3a1e] hover:underline font-medium">Recording a payment</a>
+                <a href="{{ route('help-center.article', 'recording-a-payment') }}" class="text-[#7c3a1e] hover:underline font-medium">Recording a payment</a>
                 <p class="text-gray-500 text-[12px] mt-1">Add new payment records for tenants.</p>
             </li>
             <li class="text-[13px]">
-                <a href="#" class="text-[#7c3a1e] hover:underline font-medium">Understanding payment status</a>
+                <a href="{{ route('help-center.article', 'understanding-payment-status') }}" class="text-[#7c3a1e] hover:underline font-medium">Understanding payment status</a>
                 <p class="text-gray-500 text-[12px] mt-1">Learn about paid, pending, and overdue payment statuses.</p>
             </li>
             <li class="text-[13px]">
-                <a href="#" class="text-[#7c3a1e] hover:underline font-medium">Viewing payment history</a>
+                <a href="{{ route('help-center.article', 'viewing-payment-history') }}" class="text-[#7c3a1e] hover:underline font-medium">Viewing payment history</a>
                 <p class="text-gray-500 text-[12px] mt-1">Access transaction records and financial reports.</p>
             </li>
         </ul>
@@ -110,15 +110,15 @@
         </h2>
         <ul class="space-y-3">
             <li class="text-[13px]">
-                <a href="#" class="text-[#7c3a1e] hover:underline font-medium">Creating maintenance reports</a>
+                <a href="{{ route('help-center.article', 'creating-maintenance-reports') }}" class="text-[#7c3a1e] hover:underline font-medium">Creating maintenance reports</a>
                 <p class="text-gray-500 text-[12px] mt-1">Log and track property maintenance issues.</p>
             </li>
             <li class="text-[13px]">
-                <a href="#" class="text-[#7c3a1e] hover:underline font-medium">Assigning technicians</a>
+                <a href="{{ route('help-center.article', 'assigning-technicians') }}" class="text-[#7c3a1e] hover:underline font-medium">Assigning technicians</a>
                 <p class="text-gray-500 text-[12px] mt-1">Allocate maintenance tasks to team members.</p>
             </li>
             <li class="text-[13px]">
-                <a href="#" class="text-[#7c3a1e] hover:underline font-medium">Tracking maintenance status</a>
+                <a href="{{ route('help-center.article', 'tracking-maintenance-status') }}" class="text-[#7c3a1e] hover:underline font-medium">Tracking maintenance status</a>
                 <p class="text-gray-500 text-[12px] mt-1">Monitor ongoing and completed repairs.</p>
             </li>
         </ul>
@@ -134,15 +134,15 @@
         </h2>
         <ul class="space-y-3">
             <li class="text-[13px]">
-                <a href="#" class="text-[#7c3a1e] hover:underline font-medium">Changing your password</a>
+                <a href="{{ route('help-center.article', 'changing-your-password') }}" class="text-[#7c3a1e] hover:underline font-medium">Changing your password</a>
                 <p class="text-gray-500 text-[12px] mt-1">Update your account security regularly.</p>
             </li>
             <li class="text-[13px]">
-                <a href="#" class="text-[#7c3a1e] hover:underline font-medium">Updating profile information</a>
+                <a href="{{ route('help-center.article', 'updating-profile-information') }}" class="text-[#7c3a1e] hover:underline font-medium">Updating profile information</a>
                 <p class="text-gray-500 text-[12px] mt-1">Edit your name, username, and contact details.</p>
             </li>
             <li class="text-[13px]">
-                <a href="#" class="text-[#7c3a1e] hover:underline font-medium">Logging out safely</a>
+                <a href="{{ route('help-center.article', 'logging-out-safely') }}" class="text-[#7c3a1e] hover:underline font-medium">Logging out safely</a>
                 <p class="text-gray-500 text-[12px] mt-1">Best practices for ending your session.</p>
             </li>
         </ul>

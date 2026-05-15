@@ -30,12 +30,12 @@
             </div>
 
             <div class="flex items-center gap-2">
-                <a href="{{ route('maintenance', ['month' => $previousMonth, 'year' => $previousYear]) }}" class="bg-white border border-[#ede7df] rounded-lg px-3 py-2 text-[#2d1a0e] hover:bg-[#faf7f4] transition-colors">
+                <a href="{{ route('maintenance', ['month' => $previousMonth, 'year' => $previousYear]) }}" class="bg-[#d2b48c] border border-[#b99a78] rounded-lg px-3 py-2 text-[#2d1a0e] hover:bg-[#b08a6e] hover:text-white transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
                     </svg>
                 </a>
-                <a href="{{ route('maintenance', ['month' => $nextMonth, 'year' => $nextYear]) }}" class="bg-white border border-[#ede7df] rounded-lg px-3 py-2 text-[#2d1a0e] hover:bg-[#faf7f4] transition-colors">
+                <a href="{{ route('maintenance', ['month' => $nextMonth, 'year' => $nextYear]) }}" class="bg-[#d2b48c] border border-[#b99a78] rounded-lg px-3 py-2 text-[#2d1a0e] hover:bg-[#b08a6e] hover:text-white transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5L15.75 12l-7.5 7.5" />
                     </svg>

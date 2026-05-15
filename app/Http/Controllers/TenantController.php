@@ -135,7 +135,7 @@ class TenantController extends Controller
         }
 
         $paymentStatus = $tenant->payment_status;
-        if ($this->hasPartialPayment($tenant) && $paymentStatus !== 'Overdue') {
+        if ($this->hasPartialPayment($tenant) && in_array($paymentStatus, ['Pending', 'Partially Paid'], true)) {
             $paymentStatus = 'Partially Paid';
         }
 

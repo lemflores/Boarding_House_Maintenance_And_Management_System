@@ -112,7 +112,7 @@ class FinanceController extends Controller
         $months = (int)$request->months;
         $amount = $months * 3000;
         $dueDate = now()->addMonths($months);
-        $status = 'paid'; // Assuming this is for a paid record
+        $status = 'paid';
 
         $payment = Payment::create([
             'tenant_id' => $tenant->id,
@@ -122,6 +122,12 @@ class FinanceController extends Controller
             'notes' => $request->notes,
         ]);
 
+        // Determine how many months remain before the lease is extended.
+        $originalLeaseEnd = $tenant->lease_end;
+        $remainingLeaseMonths = $originalLeaseEnd && $originalLeaseEnd->gt(now())
+            ? max(1, now()->diffInMonths($originalLeaseEnd) + 1)
+            : 0;
+
         // Extend lease when payment covers time beyond the current lease end.
         $leaseStart = $tenant->lease_end && $tenant->lease_end->gt(now()) ? $tenant->lease_end : now();
         $extendedLeaseEnd = $leaseStart->copy()->addMonths($months);
@@ -130,8 +136,14 @@ class FinanceController extends Controller
             $tenant->lease_end = $extendedLeaseEnd;
         }
 
+        $existingPaidMonths = (int) round($tenant->payments()->where('status', 'paid')->sum('amount') / 3000);
+        $tenantStatus = 'Partially Paid';
+        if ($remainingLeaseMonths === 0 || $existingPaidMonths >= $remainingLeaseMonths) {
+            $tenantStatus = 'Paid';
+        }
+
+        $tenant->payment_status = $tenantStatus;
         $tenant->save();
-        $this->syncTenantPaymentStatus($tenant);
 
         return redirect()->route('finances')->with('success', 'Payment record created successfully.');
     }

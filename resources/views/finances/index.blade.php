@@ -104,6 +104,8 @@
                         <span class="inline-block bg-green-100 text-green-800 text-[11px] font-bold px-2.5 py-0.5 rounded-full">Paid</span>
                     @elseif ($txn['tenantStatus'] === 'Overdue')
                         <span class="inline-block bg-red-600 text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full">Overdue</span>
+                    @elseif ($txn['tenantStatus'] === 'Partially Paid')
+                        <span class="inline-block bg-orange-100 text-orange-700 text-[11px] font-bold px-2.5 py-0.5 rounded-full">Partially Paid</span>
                     @else
                         <span class="inline-block bg-blue-100 text-blue-700 text-[11px] font-bold px-2.5 py-0.5 rounded-full">Pending</span>
                     @endif

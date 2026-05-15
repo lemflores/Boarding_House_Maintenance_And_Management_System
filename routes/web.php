@@ -60,5 +60,6 @@ Route::middleware('auth')->group(function () {
     Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
     Route::put('/settings/change-password', [SettingsController::class, 'changePassword'])->name('settings.change-password');
     Route::get('/help-center', [SettingsController::class, 'helpCenter'])->name('help-center');
+    Route::get('/help-center/{slug}', [SettingsController::class, 'helpArticle'])->name('help-center.article');
 });
 

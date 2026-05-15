@@ -2,11 +2,11 @@
     <div class="flex items-center gap-1">
         {{-- Previous Page Link --}}
         @if ($paginator->onFirstPage())
-            <button class="w-8 h-8 rounded-lg bg-[#faf7f4] border border-[#ede7df] text-[#2d1a0e] flex items-center justify-center cursor-not-allowed" disabled>
+            <button class="w-8 h-8 rounded-lg bg-[#d2b48c] border border-[#b99a78] text-[#2d1a0e] flex items-center justify-center cursor-not-allowed" disabled>
                 ‹
             </button>
         @else
-            <a href="{{ $paginator->previousPageUrl() }}" class="w-8 h-8 rounded-lg bg-[#faf7f4] border border-[#ede7df] text-[#2d1a0e] hover:bg-[#7c3a1e] hover:text-white transition-colors flex items-center justify-center">
+            <a href="{{ $paginator->previousPageUrl() }}" class="w-8 h-8 rounded-lg bg-[#d2b48c] border border-[#b99a78] text-[#2d1a0e] hover:bg-[#b08a6e] hover:text-white transition-colors flex items-center justify-center">
                 ‹
             </a>
         @endif
@@ -32,11 +32,11 @@
 
         {{-- Next Page Link --}}
         @if ($paginator->hasMorePages())
-            <a href="{{ $paginator->nextPageUrl() }}" class="w-8 h-8 rounded-lg bg-[#faf7f4] border border-[#ede7df] text-[#2d1a0e] hover:bg-[#7c3a1e] hover:text-white transition-colors flex items-center justify-center">
+            <a href="{{ $paginator->nextPageUrl() }}" class="w-8 h-8 rounded-lg bg-[#d2b48c] border border-[#b99a78] text-[#2d1a0e] hover:bg-[#b08a6e] hover:text-white transition-colors flex items-center justify-center">
                 ›
             </a>
         @else
-            <button class="w-8 h-8 rounded-lg bg-[#faf7f4] border border-[#ede7df] text-[#2d1a0e] flex items-center justify-center cursor-not-allowed" disabled>
+            <button class="w-8 h-8 rounded-lg bg-[#d2b48c] border border-[#b99a78] text-[#2d1a0e] flex items-center justify-center cursor-not-allowed" disabled>
                 ›
             </button>
         @endif
