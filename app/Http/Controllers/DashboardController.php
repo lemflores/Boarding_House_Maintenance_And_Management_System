@@ -108,6 +108,14 @@ class DashboardController extends Controller
         $activityLog = $payments->map(function (Payment $payment) {
             $unit = $payment->tenant->unit ?? 'N/A';
             $amount = '₱' . number_format($payment->amount, 2);
+            $paymentId = $payment->id;
+
+            // Total paid by tenant (only consider paid payments)
+            $totalPaid = 0;
+            if ($payment->tenant) {
+                $totalPaid = $payment->tenant->payments()->where('status', 'paid')->sum('amount');
+            }
+            $totalPaidFormatted = '₱' . number_format($totalPaid, 2);
 
             if ($payment->status === 'paid') {
                 $time = $payment->payment_date ? $payment->payment_date : $payment->updated_at;
@@ -115,7 +123,8 @@ class DashboardController extends Controller
                 return [
                     'dotColor' => 'bg-green-500',
                     'title'    => 'Payment Received',
-                    'desc'     => "{$amount} from Unit {$unit} · {$time->diffForHumans()}",
+                    'desc'     => "{$amount} from Unit {$unit} · total paid {$totalPaidFormatted} · {$time->diffForHumans()}",
+                    'payment_id' => $paymentId,
                 ];
             }
 
@@ -124,6 +133,7 @@ class DashboardController extends Controller
                     'dotColor' => 'bg-orange-400',
                     'title'    => 'Overdue Payment',
                     'desc'     => "Unit {$unit} overdue since {$payment->due_date->format('M d')} · {$amount}",
+                    'payment_id' => $paymentId,
                 ];
             }
 
@@ -131,6 +141,7 @@ class DashboardController extends Controller
                 'dotColor' => 'bg-blue-400',
                 'title'    => 'Upcoming Payment',
                 'desc'     => "Unit {$unit} due on {$payment->due_date->format('M d')} · {$amount}",
+                'payment_id' => $paymentId,
             ];
         })->filter()->values()->all();
 

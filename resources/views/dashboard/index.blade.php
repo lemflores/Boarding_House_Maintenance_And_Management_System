@@ -162,12 +162,27 @@
         <h3 class="text-[15px] font-bold text-[#2d1a0e] mb-4">Activity Log</h3>
         <div class="space-y-4">
             @forelse ($activityLog as $log)
-            <div class="flex gap-3 items-start">
-                <div class="w-2.5 h-2.5 rounded-full mt-[3px] flex-shrink-0 {{ $log['dotColor'] }}"></div>
-                <div>
-                    <p class="text-[13px] font-semibold text-[#2d1a0e] leading-tight">{{ $log['title'] }}</p>
-                    <p class="text-[11px] text-gray-400 mt-0.5 leading-snug">{{ $log['desc'] }}</p>
+            <div class="flex gap-3 items-start justify-between">
+                <div class="flex gap-3 items-start">
+                    <div class="w-2.5 h-2.5 rounded-full mt-[3px] flex-shrink-0 {{ $log['dotColor'] }}"></div>
+                    <div>
+                        <p class="text-[13px] font-semibold text-[#2d1a0e] leading-tight">{{ $log['title'] }}</p>
+                        <p class="text-[11px] text-gray-400 mt-0.5 leading-snug">{{ $log['desc'] }}</p>
+                    </div>
                 </div>
+                @if(!empty($log['payment_id']))
+                <div class="flex-shrink-0">
+                    <form method="POST" action="{{ route('finances.destroy', $log['payment_id']) }}" onsubmit="return confirm('Delete this activity/payment record?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="text-gray-400 hover:text-red-600 transition-colors p-1" title="Delete Activity">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 2.98a1.125 1.125 0 00-2.228-.015L9.591 5.6M5.106 5.4A2.625 2.625 0 103.675 3.98m0 13.621a8.002 8.002 0 01-5.022-2.478A8.002 8.002 0 015.106 19.02M19.5 9.5c0 .828-.672 1.5-1.5 1.5s-1.5-.672-1.5-1.5.672-1.5 1.5-1.5 1.5.672 1.5 1.5z" />
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+                @endif
             </div>
             @empty
             <div class="text-[12px] text-gray-500">No recent activity available.</div>
