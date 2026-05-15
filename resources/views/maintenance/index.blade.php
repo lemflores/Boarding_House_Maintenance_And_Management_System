@@ -68,8 +68,7 @@
                     </tr>
                 </thead>
                 <tbody id="maintenanceTableBody">
-                    @php $activeTickets = collect($tickets)->where('status', '!=', 'RESOLVED'); @endphp
-                    @forelse ($activeTickets as $ticket)
+                    @forelse ($ticketPaginator as $ticket)
                     <tr id="ticket-row-{{ $ticket['id'] }}" class="border-t border-[#f0ebe5] hover:bg-[#faf7f4] transition-colors ticket-row" data-ticket-id="{{ $ticket['id'] }}" data-subject="{{ $ticket['subject'] }}" data-location="{{ $ticket['location'] }}" data-status="{{ $ticket['status'] }}" data-assigned="{{ $ticket['assigned'] ? 'true' : 'false' }}">
                         <td class="px-4 py-3.5 font-mono text-[11px] text-gray-400">{{ $ticket['ref'] }}</td>
                         <td class="px-4 py-3.5 text-[13px] font-semibold text-[#2d1a0e]">{{ $ticket['subject'] }}</td>
@@ -144,6 +143,12 @@
                     @endforelse
                 </tbody>
             </table>
+        </div>
+        <div class="flex items-center justify-between px-4 py-4 border-t border-[#ede7df] bg-[#faf7f4]">
+            <p class="text-[12px] text-gray-400">Showing {{ $ticketPaginator->firstItem() ?? 0 }} to {{ $ticketPaginator->lastItem() ?? 0 }} of {{ $ticketPaginator->total() }} active tickets</p>
+            <div class="flex items-center gap-1">
+                {{ $ticketPaginator->appends(request()->query())->links('vendor.pagination.default') }}
+            </div>
         </div>
     </div>
 
