@@ -162,7 +162,7 @@
     <div class="flex items-center justify-between px-6 py-4 border-t border-[#ede7df]">
         <p class="text-[12px] text-gray-400">Showing {{ $transactions->firstItem() ?? 0 }} to {{ $transactions->lastItem() ?? 0 }} of {{ $transactions->total() }} transactions</p>
         <div class="flex items-center gap-1">
-            {{ $transactions->appends(request()->query())->links() }}
+            {{ $transactions->appends(request()->query())->links('vendor.pagination.default') }}
         </div>
     </div>
 </div>

@@ -143,7 +143,7 @@ Add New Tenant
     <div class="flex items-center justify-between px-6 py-4 border-t border-[#ede7df]">
         <p class="text-[12px] text-gray-400">Showing {{ $tenantsPaginated->firstItem() ?? 0 }} to {{ $tenantsPaginated->lastItem() ?? 0 }} of {{ $tenantsPaginated->total() }} tenants</p>
         <div class="flex items-center gap-1">
-            {{ $tenantsPaginated->appends(request()->query())->links() }}
+            {{ $tenantsPaginated->appends(request()->query())->links('vendor.pagination.default') }}
         </div>
     </div>
 </div>

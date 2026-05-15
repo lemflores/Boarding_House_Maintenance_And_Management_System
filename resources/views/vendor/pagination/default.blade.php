@@ -22,9 +22,9 @@
             @if (is_array($element))
                 @foreach ($element as $page => $url)
                     @if ($page == $paginator->currentPage())
-                        <button class="w-8 h-8 rounded-lg bg-[#7c3a1e] text-white text-[12px] font-bold">{{ $page }}</button>
+                        <button class="w-8 h-8 rounded-lg bg-[#7c3a1e] text-white text-[12px] font-bold inline-flex items-center justify-center leading-none">{{ $page }}</button>
                     @else
-                        <a href="{{ $url }}" class="w-8 h-8 rounded-lg bg-[#faf7f4] border border-[#ede7df] text-[#2d1a0e] text-[12px] hover:bg-[#7c3a1e] hover:text-white transition-colors">{{ $page }}</a>
+                        <a href="{{ $url }}" class="w-8 h-8 rounded-lg bg-[#faf7f4] border border-[#ede7df] text-[#2d1a0e] text-[12px] hover:bg-[#7c3a1e] hover:text-white transition-colors inline-flex items-center justify-center leading-none">{{ $page }}</a>
                     @endif
                 @endforeach
             @endif
