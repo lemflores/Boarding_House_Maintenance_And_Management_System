@@ -16,6 +16,7 @@ class UtilityController extends Controller
         }
 
         $tenantRooms = Tenant::query()
+            ->where('user_id', auth()->id())
             ->whereNotNull('unit')
             ->get()
             ->mapWithKeys(function (Tenant $tenant) {
@@ -24,7 +25,7 @@ class UtilityController extends Controller
             })
             ->all();
 
-        $maintenanceRooms = collect(MaintenanceController::getTickets())
+        $maintenanceRooms = collect(MaintenanceController::getTickets(auth()->id()))
             ->filter(function ($ticket) {
                 return $ticket['status'] !== 'RESOLVED';
             })

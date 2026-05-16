@@ -10,6 +10,7 @@ class Payment extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'tenant_id',
         'amount',
         'due_date',
@@ -27,5 +28,10 @@ class Payment extends Model
     public function tenant()
     {
         return $this->belongsTo(Tenant::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

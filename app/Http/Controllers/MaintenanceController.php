@@ -11,9 +11,12 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class MaintenanceController extends Controller
 {
-    public static function getTickets(): array
+    public static function getTickets(?int $userId = null): array
     {
-        return MaintenanceReport::orderBy('id')->get()->toArray();
+        return MaintenanceReport::when($userId, fn ($query) => $query->where('user_id', $userId))
+            ->orderBy('id')
+            ->get()
+            ->toArray();
     }
 
     public function index(Request $request)
@@ -21,7 +24,7 @@ class MaintenanceController extends Controller
         $month = $request->get('month', now()->month);
         $year = $request->get('year', now()->year);
 
-        $tickets = self::getTickets();
+        $tickets = self::getTickets(auth()->id());
         $activeTickets = array_values(array_filter($tickets, fn($t) => $t['status'] !== 'RESOLVED'));
         $page = LengthAwarePaginator::resolveCurrentPage();
         $ticketPaginator = new LengthAwarePaginator(
@@ -98,6 +101,7 @@ class MaintenanceController extends Controller
         ]);
 
         $ticket = MaintenanceReport::create([
+            'user_id'         => auth()->id(),
             'ref'              => '',
             'subject'         => $validated['subject'],
             'location'        => $validated['location'],
@@ -122,7 +126,7 @@ class MaintenanceController extends Controller
 
     public function resolve($id, Request $request)
     {
-        $ticket = MaintenanceReport::find($id);
+        $ticket = MaintenanceReport::where('user_id', auth()->id())->find($id);
 
         if (! $ticket) {
             return response()->json([
@@ -147,7 +151,7 @@ class MaintenanceController extends Controller
             'technician' => 'required|string|max:255',
         ]);
 
-        $ticket = MaintenanceReport::find($id);
+        $ticket = MaintenanceReport::where('user_id', auth()->id())->find($id);
 
         if (! $ticket) {
             return response()->json([
@@ -178,7 +182,7 @@ class MaintenanceController extends Controller
             'status' => 'required|in:NEW,IN PROGRESS,RESOLVED',
         ]);
 
-        $ticket = MaintenanceReport::find($id);
+        $ticket = MaintenanceReport::where('user_id', auth()->id())->find($id);
 
         if (! $ticket) {
             return response()->json([
@@ -205,7 +209,8 @@ class MaintenanceController extends Controller
             3 => ['301', '302', '303', '304', '305', '306', '307', '308', '309', '310', '311', '312'],
         ];
 
-        $occupiedUnits = Tenant::whereNotNull('unit')
+        $occupiedUnits = Tenant::where('user_id', auth()->id())
+            ->whereNotNull('unit')
             ->pluck('unit')
             ->map(fn ($unit) => $this->normalizeRoomNumber($unit))
             ->filter()

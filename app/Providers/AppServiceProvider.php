@@ -15,13 +15,22 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         View::composer('layouts.app', function ($view) {
-            // Get expired and almost expired tenants
             $now = Carbon::today();
-            $expiredTenants = Tenant::where('lease_end', '<', $now)->get();
-            $almostExpiredTenants = Tenant::whereBetween('lease_end', [$now, $now->copy()->addDays(7)])->get();
+            if (! auth()->check()) {
+                $view->with([
+                    'expiredTenants' => collect(),
+                    'almostExpiredTenants' => collect(),
+                    'maintenanceItems' => [],
+                ]);
+                return;
+            }
+
+            // Get expired and almost expired tenants for current user
+            $expiredTenants = Tenant::where('user_id', auth()->id())->where('lease_end', '<', $now)->get();
+            $almostExpiredTenants = Tenant::where('user_id', auth()->id())->whereBetween('lease_end', [$now, $now->copy()->addDays(7)])->get();
 
             // Get maintenance items
-            $tickets = MaintenanceController::getTickets();
+            $tickets = MaintenanceController::getTickets(auth()->id());
             $maintenanceItems = $this->buildMaintenanceItems($tickets);
 
             $view->with([

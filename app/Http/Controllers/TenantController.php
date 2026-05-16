@@ -15,7 +15,7 @@ class TenantController extends Controller
         $filter = $request->input('filter', 'all');
         $search = $request->input('search', '');
 
-        $query = Tenant::query();
+        $query = Tenant::where('user_id', auth()->id());
 
         if ($filter !== 'all') {
             $query->whereRaw('LOWER(status) = ?', [Str::lower($filter)]);
@@ -34,11 +34,11 @@ class TenantController extends Controller
         $tenants = $tenantModels->getCollection()->map(fn (Tenant $tenant) => $this->formatTenant($tenant))->all();
         $tenantModels->setCollection(collect($tenants));
 
-        $totalResidents = Tenant::sum('occupants');
-        $activeLeases = Tenant::where('status', 'Active')->count();
-        $expiringLeases = Tenant::whereBetween('lease_end', [now(), now()->addDays(30)])->count();
+        $totalResidents = Tenant::where('user_id', auth()->id())->sum('occupants');
+        $activeLeases = Tenant::where('user_id', auth()->id())->where('status', 'Active')->count();
+        $expiringLeases = Tenant::where('user_id', auth()->id())->whereBetween('lease_end', [now(), now()->addDays(30)])->count();
         $totalUnits = 36; // 3 floors × 12 units per floor
-        $occupancyRate = round((Tenant::count() / $totalUnits) * 100, 1);
+        $occupancyRate = round((Tenant::where('user_id', auth()->id())->count() / $totalUnits) * 100, 1);
 
         return view('tenants.index', [
             'tenants'        => $tenants,
@@ -60,28 +60,28 @@ class TenantController extends Controller
 
     public function store(Request $request)
     {
-        $tenant = Tenant::create($this->validateTenant($request));
+        $tenant = Tenant::create(array_merge($this->validateTenant($request), ['user_id' => auth()->id()]));
 
         return redirect()->route('tenants.show', $tenant)->with('success', 'Tenant created successfully.');
     }
 
     public function show($id)
     {
-        $tenant = Tenant::findOrFail($id);
+        $tenant = Tenant::where('user_id', auth()->id())->findOrFail($id);
 
         return view('tenants.show', ['tenant' => $this->formatTenant($tenant), 'rawTenant' => $tenant]);
     }
 
     public function edit($id)
     {
-        $tenant = Tenant::findOrFail($id);
+        $tenant = Tenant::where('user_id', auth()->id())->findOrFail($id);
         $availableUnits = $this->getAvailableUnits($tenant->unit);
         return view('tenants.edit', compact('tenant', 'availableUnits'));
     }
 
     public function update(Request $request, $id)
     {
-        $tenant = Tenant::findOrFail($id);
+        $tenant = Tenant::where('user_id', auth()->id())->findOrFail($id);
         $tenant->update($this->validateTenant($request));
 
         return redirect()->route('tenants.show', $tenant)->with('success', 'Tenant updated successfully.');
@@ -89,7 +89,7 @@ class TenantController extends Controller
 
     public function destroy($id)
     {
-        $tenant = Tenant::findOrFail($id);
+        $tenant = Tenant::where('user_id', auth()->id())->findOrFail($id);
         $tenant->delete();
 
         return redirect()->route('tenants')->with('success', 'Tenant deleted successfully.');
@@ -220,7 +220,8 @@ class TenantController extends Controller
         }
 
         // Get occupied units excluding the current tenant unit when editing.
-        $occupiedUnits = Tenant::whereNotNull('unit')
+        $occupiedUnits = Tenant::where('user_id', auth()->id())
+            ->where('user_id', auth()->id())->whereNotNull('unit')
             ->when($currentUnit, fn ($query) => $query->where('unit', '!=', $currentUnit))
             ->pluck('unit')
             ->map(fn ($unit) => $this->normalizeRoomNumber($unit))

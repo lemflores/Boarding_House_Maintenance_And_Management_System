@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class MaintenanceReport extends Model
 {
     protected $fillable = [
+        'user_id',
         'ref',
         'subject',
         'location',
@@ -44,5 +45,15 @@ class MaintenanceReport extends Model
     public function getAssignedNameAttribute(): ?string
     {
         return $this->attributes['assigned_name'] ?? null;
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function scopeOwnedBy($query, $userId)
+    {
+        return $query->where('user_id', $userId);
     }
 }

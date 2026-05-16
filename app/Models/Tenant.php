@@ -10,6 +10,7 @@ class Tenant extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'name',
         'unit',
         'occupants',
@@ -30,6 +31,16 @@ class Tenant extends Model
     public function payments()
     {
         return $this->hasMany(Payment::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function scopeOwnedBy($query, $userId)
+    {
+        return $query->where('user_id', $userId);
     }
 
     public function getLeaseMonths(): int

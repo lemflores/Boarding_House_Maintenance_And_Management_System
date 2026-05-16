@@ -13,22 +13,23 @@ class DashboardController extends Controller
     public function index()
     {
         $totalUnits = 36;
-        $activeRent = Tenant::where('status', 'Active')->count();
-        $occupiedUnits = Tenant::count();
+        $userId = auth()->id();
+        $activeRent = Tenant::where('user_id', $userId)->where('status', 'Active')->count();
+        $occupiedUnits = Tenant::where('user_id', $userId)->count();
         $occupancyRate = $totalUnits ? round($occupiedUnits / $totalUnits * 100, 1) : 0;
-        $totalRevenue = Payment::where('status', 'paid')->sum('amount');
+        $totalRevenue = Payment::where('user_id', $userId)->where('status', 'paid')->sum('amount');
 
-        $tickets = MaintenanceController::getTickets();
+        $tickets = MaintenanceController::getTickets($userId);
         $pendingRequests = count(array_filter($tickets, fn($t) => $t['status'] === 'NEW'));
         $inProgressRequests = count(array_filter($tickets, fn($t) => $t['status'] === 'IN PROGRESS'));
         $resolvedRequests = count(array_filter($tickets, fn($t) => $t['status'] === 'RESOLVED'));
 
-        $newApplicants = Tenant::where('status', 'Pending')->count();
+        $newApplicants = Tenant::where('user_id', $userId)->where('status', 'Pending')->count();
 
         // Get expired and almost expired tenants
         $now = Carbon::today();
-        $expiredTenants = Tenant::where('lease_end', '<', $now)->get();
-        $almostExpiredTenants = Tenant::whereBetween('lease_end', [$now, $now->copy()->addDays(7)])->get();
+        $expiredTenants = Tenant::where('user_id', $userId)->where('lease_end', '<', $now)->get();
+        $almostExpiredTenants = Tenant::where('user_id', $userId)->whereBetween('lease_end', [$now, $now->copy()->addDays(7)])->get();
 
         $data = [
             'totalRevenue'      => $totalRevenue,
@@ -100,7 +101,10 @@ class DashboardController extends Controller
             return [];
         }
 
+        $userId = auth()->id();
+
         $payments = Payment::with('tenant')
+            ->where('user_id', $userId)
             ->orderByDesc('updated_at')
             ->limit(6)
             ->get();

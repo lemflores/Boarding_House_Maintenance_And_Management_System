@@ -3,6 +3,9 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\MaintenanceReport;
+use App\Models\Payment;
+use App\Models\Tenant;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -42,5 +45,20 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function tenants()
+    {
+        return $this->hasMany(Tenant::class);
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    public function maintenanceReports()
+    {
+        return $this->hasMany(MaintenanceReport::class);
     }
 }
