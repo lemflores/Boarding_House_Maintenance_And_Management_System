@@ -91,7 +91,7 @@ class FinanceController extends Controller
 
         $tenants = Tenant::where('user_id', $userId)->get()->map(function (Tenant $tenant) {
             $paymentStatus = $tenant->payment_status;
-            if ($paymentStatus !== 'Overdue' && $tenant->isPartiallyPaid()) {
+            if (in_array($paymentStatus, ['Pending', 'Partially Paid'], true) && $tenant->isPartiallyPaid()) {
                 $paymentStatus = 'Partially Paid';
             }
 
